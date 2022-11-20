@@ -2,6 +2,7 @@
 from . import regles
 
 TYPE_BRUT_SALARIAL = 'brut salarial'
+TYPE_INDEMNITE = 'indemnite'
 
 TAG_TRAITEMENT_BRUT = 'traitement brut'
 TAG_INDEMNITE_RESIDENCE = 'indemnité de résidence'
@@ -23,7 +24,7 @@ def traitement_brut(montant=None, indice=None):
             raise ValueError('pypaie.revenu.traitement_brut: le montant ou la paire (indice, valeur_point) doivent être précisés.')
         montant = regles.valeur_point_indice* indice
     return {'type': TYPE_BRUT_SALARIAL,
-            'libelle': TAG_TRAITEMENT_BRUT_SALARIAL,
+            'libelle': TAG_TRAITEMENT_BRUT,
             'montant': montant}
 
 # Indemnite pour difficultés administratives
@@ -43,8 +44,8 @@ def indemnite_hausse_CSG(montant):
             'montant': montant}
 
 def remboursement_psc():
-    return {'type': TYPE_BRUT_SALARIAL,
+    return {'type': TYPE_INDEMNITE,
             'libelle': TAG_REMBOURSEMENT_FORFAITAIRE_PSC,
-            'montant': montant}
+            'montant': regles.remboursement_forfaitaire_psc}
 
 
