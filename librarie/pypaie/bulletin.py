@@ -41,8 +41,10 @@ class Bulletin:
             raise ValueError(f'Bulletin.cotise (-=) : type de cotisation -- {cotisation} -- non géré, devrait être dans {cotisations.cotisations}.')
         if cotisation == cotisations.VIEILLESSE_PRIVE:
             cotis = cotisations.vieillesse_prive(self.brut_salarial)
-        elif cotisation == cotisations.AGIRC_ARRCO_PRIVE:
-            cotis = cotisations.agirc_arrco_prive(self.brut_salarial)
+        elif cotisation == cotisations.AGIRC_ARRCO:
+            cotis = cotisations.agirc_arrco(self.brut_salarial)
+        elif cotisation == cotisations.AGIRC_ARRCO:
+            cotis = cotisations.ircantec(self.brut_salarial)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')
         

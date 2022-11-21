@@ -19,8 +19,7 @@ plafond_securite_sociale = 3428
 def calcul_tranches_cotisation_vieillesse(brut_salarial):
     tranche_1 = min(brut_salarial, plafond_securite_sociale)
     tranche_2 = min(max(0, brut_salarial - tranche_1), 7*plafond_securite_sociale)
-    tranche_3 = brut_salarial - tranche_1 - tranche_2
-    return tranche_1, tranche_2, tranche_3
+    return tranche_1, tranche_2
 
 taux_vieillesse_salarial_plafonnee   = 0.069
 taux_vieillesse_patronal_plafonnee   = 0.0855
@@ -31,9 +30,7 @@ taux_vieillesse_patronal_deplafonnee = 0.019
 # calcul retraite privée complementaire AGIRC-ARRCO
 
 def calcul_tranches_agirc_arrco(brut_salarial):
-    tranche_1 = min(brut_salarial, plafond_securite_sociale)
-    tranche_2 = brut_salarial - tranche_1
-    return tranche_1, tranche_2
+    return calcul_tranches_cotisation_vieillesse(brut_salarial)
 
 taux_agirc_arrco_tranche_1 = 0.0787
 taux_agirc_arrco_tranche_2 = 0.2159
@@ -41,5 +38,13 @@ part_salariale_agirc_arrco = 0.4
 part_patronale_agirc_arrco = 1 - part_salariale_agirc_arrco
 
 
-    
-    
+# calcul retraite pubplique complementaire IRCANATEC
+
+def calcul_tranches_ircantec(brut_salarial):
+    return calcul_tranches_cotisation_vieillesse(brut_salarial)
+
+taux_ircantec_salarial_tranche_a = 0.028
+taux_ircantec_patronal_tranche_a = 0.042
+
+taux_ircantec_salarial_tranche_b = 0.0695
+taux_ircantec_patronal_tranche_b = 0.1255
