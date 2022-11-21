@@ -14,6 +14,7 @@ bulletin_paie += pp.revenus.remboursement_psc()
 
 # Je mentionne les cotisations.
 bulletin_paie -= pp.cotisations.VIEILLESSE_PRIVE
+# bulletin_paie -= pp.cotisations.AGIRC_ARRCO_PRIVE
 
 # Je montre le résultat
 filename = 'contractuel_CS.xlsx'
