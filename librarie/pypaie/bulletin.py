@@ -43,7 +43,7 @@ class Bulletin:
             cotis = cotisations.vieillesse_prive(self.brut_salarial)
         elif cotisation == cotisations.AGIRC_ARRCO:
             cotis = cotisations.agirc_arrco(self.brut_salarial)
-        elif cotisation == cotisations.AGIRC_ARRCO:
+        elif cotisation == cotisations.IRCANTEC:
             cotis = cotisations.ircantec(self.brut_salarial)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')

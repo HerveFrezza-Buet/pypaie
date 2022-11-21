@@ -66,7 +66,7 @@ def ircantec(brut_salarial):
     tag = ' '.join([TAG_IRCANTEC, 'TB'])
     cotisations.append({'type': TYPE_COTISATION_SOCIALE,
                         'libelle': tag,
-                        'salarial': regles.taux_ircantec_salarial_tranche_b * brut_salarial,
-                        'patronal': regles.taux_ircantec_patronal_tranche_b * brut_salarial})
+                        'salarial': regles.taux_ircantec_salarial_tranche_b * tranche_2,
+                        'patronal': regles.taux_ircantec_patronal_tranche_b * tranche_2})
 
     return cotisations
