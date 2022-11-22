@@ -65,3 +65,6 @@ def calcul_assiette_csg_crds(brut_salarial):
     return tranche_1 * taux_csg_abattement + tranche_2
 
 
+# calcul maladie
+taux_maladie_patronal_general = .07
+taux_maladie_salarial_local   = .013

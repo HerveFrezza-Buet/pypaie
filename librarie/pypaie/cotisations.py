@@ -2,12 +2,14 @@ from . import regles
 
 # Cotisations
 VIEILLESSE_PRIVE = 'cotisation vieillesse prive'
-AGIRC_ARRCO = 'complementaire vieilesse AGIRC-ARRCO'
-IRCANTEC = 'complementaire vieilesse IRCANTEC'
+AGIRC_ARRCO = 'complementaire vieillesse AGIRC-ARRCO'
+IRCANTEC = 'complementaire vieillesse IRCANTEC'
 CSG_CRDS = 'CSG CRDS'
+MALADIE_REGIME_GENERAL = 'cotisation maladie'
+MALADIE_REGIME_LOCAL = 'cotisation maladie (local)'
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS])
+cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
@@ -17,6 +19,8 @@ TAG_IRCANTEC = 'cotisation compl. vieillesse IRCANTEC'
 TAG_CSG_NONIMP = 'CSG déductible'
 TAG_CSG_IMP = 'CSG imposable'
 TAG_CRDS = 'CRDS'
+TAG_MALADIE_GENERAL = 'cotisation maladie'
+TAG_MALADIE_LOCAL = 'cotisation maladie ALS/MOS'
 
 
 
@@ -94,5 +98,22 @@ def csg_crds(brut_salarial):
                         'salarial': regles.taux_crds_salarial * assiette,
                         'patronal': 0.0})
 
+    return cotisations
+
+def maladie_regime_general(brut_salarial):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_MALADIE_GENERAL,
+                        'salarial': 0.0,
+                        'patronal': taux_maladie_patronal_general * brut_salarial})
+    return cotisations
+    
+
+def maladie_regime_local(brut_salarial):
+    cotisations = maladie_regime_general(brut_salarial)
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_MALADIE_GENERAL,
+                        'salarial': taux_maladie_salarial_local * brut_salarial,
+                        'patronal': 0.0})
     return cotisations
         
