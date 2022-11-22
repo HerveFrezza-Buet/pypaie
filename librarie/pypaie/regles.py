@@ -18,7 +18,9 @@ plafond_securite_sociale = 3428
 # calcul retraite privé securite sociale
 def calcul_tranches_cotisation_vieillesse(brut_salarial):
     tranche_1 = min(brut_salarial, plafond_securite_sociale)
-    tranche_2 = min(max(0, brut_salarial - tranche_1), 7*plafond_securite_sociale)
+    tranche_2 = 0 # comme ça ça fait vraiment 0, pas de soucis d'arrondis.
+    if brut_salarial > plafond_securite_sociale:
+        tranche_2 = min(brut_salarial, 8*plafond_securite_sociale) - tranche_1
     return tranche_1, tranche_2
 
 taux_vieillesse_salarial_plafonnee   = 0.069
@@ -48,3 +50,18 @@ taux_ircantec_patronal_tranche_a = 0.042
 
 taux_ircantec_salarial_tranche_b = 0.0695
 taux_ircantec_patronal_tranche_b = 0.1255
+
+# calcul CSG-CRDS
+
+taux_csg_abattement      = 0.9825
+taux_csg_imp_salarial    = 0.024
+taux_csg_nonimp_salarial = 0.068
+taux_crds_salarial       = 0.005
+def calcul_assiette_csg_crds(brut_salarial):
+    tranche_1 = min(brut_salarial, 4*plafond_securite_sociale)
+    tranche_2 = 0 # comme ça ça fait vraiment 0, pas de soucis d'arrondis.
+    if brut_salarial > 4*plafond_securite_sociale:
+        tranche_2 = brut_salarial - tranche_1
+    return tranche_1 * taux_csg_abattement + tranche_2
+
+

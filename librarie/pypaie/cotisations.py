@@ -4,15 +4,21 @@ from . import regles
 VIEILLESSE_PRIVE = 'cotisation vieillesse prive'
 AGIRC_ARRCO = 'complementaire vieilesse AGIRC-ARRCO'
 IRCANTEC = 'complementaire vieilesse IRCANTEC'
+CSG_CRDS = 'CSG CRDS'
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC])
+cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
 TAG_VIEILLESSE = 'cotisation vieillesse'
 TAG_AGIRC_ARRCO = 'cotisation compl. vieillesse AGIRC-ARRCO'
 TAG_IRCANTEC = 'cotisation compl. vieillesse IRCANTEC'
+TAG_CSG_NONIMP = 'CSG déductible'
+TAG_CSG_IMP = 'CSG imposable'
+TAG_CRDS = 'CRDS'
+
+
 
 def vieillesse_prive(brut_salarial):
     tranche_1, tranche_2 = regles.calcul_tranches_cotisation_vieillesse(brut_salarial)
@@ -70,3 +76,23 @@ def ircantec(brut_salarial):
                         'patronal': regles.taux_ircantec_patronal_tranche_b * tranche_2})
 
     return cotisations
+
+def csg_crds(brut_salarial):
+    assiette = regles.calcul_assiette_csg_crds(brut_salarial)
+    cotisations = []
+    
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_CSG_IMP,
+                        'salarial': regles.taux_csg_imp_salarial * assiette,
+                        'patronal': 0.0})
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_CSG_NONIMP,
+                        'salarial': regles.taux_csg_nonimp_salarial * assiette,
+                        'patronal': 0.0})
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_CRDS,
+                        'salarial': regles.taux_crds_salarial * assiette,
+                        'patronal': 0.0})
+
+    return cotisations
+        

@@ -45,6 +45,8 @@ class Bulletin:
             cotis = cotisations.agirc_arrco(self.brut_salarial)
         elif cotisation == cotisations.IRCANTEC:
             cotis = cotisations.ircantec(self.brut_salarial)
+        elif cotisation == cotisations.CSG_CRDS:
+            cotis = cotisations.csg_crds(self.brut_salarial + self.autres_revenus)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')
         
