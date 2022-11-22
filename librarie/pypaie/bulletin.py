@@ -46,7 +46,11 @@ class Bulletin:
         elif cotisation == cotisations.IRCANTEC:
             cotis = cotisations.ircantec(self.brut_salarial)
         elif cotisation == cotisations.CSG_CRDS:
-            cotis = cotisations.csg_crds(self.brut_salarial + self.autres_revenus)
+            cotis = cotisations.csg_crds(self.brut_salarial + self.autres_revenus) # !!!!
+        elif cotisation == cotisations.MALADIE_REGIME_GENERAL:
+            cotis = cotisations.maladie_regime_general(self.brut_salarial)
+        elif cotisation == cotisations.MALADIE_REGIME_LOCAL:
+            cotis = cotisations.maladie_regime_local(self.brut_salarial)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')
         
