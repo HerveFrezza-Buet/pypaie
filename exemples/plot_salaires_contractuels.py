@@ -18,9 +18,13 @@ nets = []
 for indice in indices:
     bulletin_paie.clear()
     bulletin_paie += pp.revenus.traitement_brut(indice=indice)
+    bulletin_paie += pp.revenus.indemnite_de_residence(.01*bulletin_paie.brut_salarial) 
+    bulletin_paie += pp.revenus.indemnite_pour_difficultes_administratives(indice)
+    bulletin_paie += pp.revenus.indemnite_hausse_CSG(2.00)
+    bulletin_paie += pp.revenus.remboursement_psc()
     bulletin_paie -= pp.cotisations.VIEILLESSE_PRIVE
     bulletin_paie -= pp.cotisations.IRCANTEC
-    bulletin_paie -= pp.cotisations.MALADIE_REGIME_LOCAL
+    bulletin_paie -= pp.cotisations.MALADIE_REGIME_GENERAL
     bulletin_paie -= pp.cotisations.ALLOCATIONS_FAMILIALES
     bulletin_paie -= pp.cotisations.ACCIDENTS_TRAVAIL
     if sys.argv[1] == 'chomage':
@@ -50,16 +54,16 @@ gs  = fig.add_gridspec(2, 1,
 ax = fig.add_subplot(gs[0, 0])
 ax.set_xlabel('indice')
 ax.set_ylabel('salaire')
-ax.plot(indices, bruts, label='brut')
-ax.plot(indices, nets, label='net')
+ax.plot(indices, bruts, label='salaire total')
+ax.plot(indices, nets, label='salaire net')
 ax.legend()
 
 ax = fig.add_subplot(gs[1, 0])
 ax.set_ylim(0, 1)
 ax.set_xlabel('indice')
 ax.set_ylabel('Pourcentage')
-ax.plot(indices, np.ones_like(indices), label='brut')
-ax.plot(indices, nets/bruts, label='net')
+ax.plot(indices, np.ones_like(indices), label='salaire total')
+ax.plot(indices, nets/bruts, label='salaire net')
 ax.legend()
 
 filename = f'net_et_brut_contractuel_{sys.argv[1]}.pdf'
