@@ -43,7 +43,9 @@ class Bulletin:
     def cotise(self, cotisation):
         if cotisation not in cotisations.cotisations:
             raise ValueError(f'Bulletin.cotise (-=) : type de cotisation -- {cotisation} -- non géré, devrait être dans {cotisations.cotisations}.')
-        if cotisation == cotisations.VIEILLESSE_PRIVE:
+        if cotisation == cotisations.CHOMAGE:
+            cotis = cotisations.chomage(self.brut_salarial)
+        elif cotisation == cotisations.VIEILLESSE_PRIVE:
             cotis = cotisations.vieillesse_prive(self.brut_salarial)
         elif cotisation == cotisations.AGIRC_ARRCO:
             cotis = cotisations.agirc_arrco(self.brut_salarial)

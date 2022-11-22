@@ -54,6 +54,12 @@ taux_ircantec_patronal_tranche_a = 0.042
 taux_ircantec_salarial_tranche_b = 0.0695
 taux_ircantec_patronal_tranche_b = 0.1255
 
+# calcul chomage
+taux_chomage_patronal = 0.0405
+taux_ags_patronal     = 0.0015
+def calcul_assiette_chomage(brut_salarial):
+    return min(brut_salarial, 4*plafond_securite_sociale)
+
 # calcul CSG-CRDS
 
 taux_csg_abattement      = 0.9825

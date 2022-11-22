@@ -12,9 +12,10 @@ ACCIDENTS_TRAVAIL = 'accidents travail'
 FNAL = "fond national d'aide au logement"
 CNSA = "cnsa"
 MOBILITE = "mobilité"
+CHOMAGE = 'chômage'
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE])
+cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE, CHOMAGE])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
@@ -31,6 +32,8 @@ TAG_ACCIDENTS_TRAVAIL = 'cotisation accidents du travail'
 TAG_FNAL = "cotisation fond national d'aide au logement"
 TAG_CNSA = "cotisation caisse nationale de solidarité pour l'autonomie"
 TAG_MOBILITE = "versement mobilité"
+TAG_CHOMAGE = "cotisation assurance chômage"
+TAG_AGS = "cotisation AGS garantie des salaires"
 
 
 
@@ -178,4 +181,16 @@ def mobilite(brut_salarial, taux):
                         'libelle': TAG_MOBILITE,
                         'salarial': 0.0,
                         'patronal': taux * brut_salarial})
+    return cotisations
+
+def chomage(brut_salarial):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_CHOMAGE,
+                        'salarial': 0.0,
+                        'patronal': regles.taux_chomage_patronal * brut_salarial})
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_AGS,
+                        'salarial': 0.0,
+                        'patronal': regles.taux_ags_patronal * brut_salarial})
     return cotisations
