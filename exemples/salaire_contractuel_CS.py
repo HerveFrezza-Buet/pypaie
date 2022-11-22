@@ -1,11 +1,12 @@
 import pypaie as pp
 
-mon_indice = 1059
+mon_indice = 1000
 
 # je crée un bulletin de paie
-bulletin_paie = pp.bulletin.Bulletin(allocation_maladie_taux_reduit = False,
+bulletin_paie = pp.bulletin.Bulletin(employeur_beneficie_taux_reduit_alloc_familiales = False,
                                      taux_accidents_travail = 1.07,
-                                     taux_versement_mobilite = 2.00)
+                                     taux_versement_mobilite = 2.00,
+                                     nb_salaries = 100) # le seuil pour changer les calculs est 50
 
 # J'y ajoute les revenus.
 bulletin_paie += pp.revenus.traitement_brut(indice=mon_indice)

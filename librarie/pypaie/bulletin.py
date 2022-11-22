@@ -1,10 +1,11 @@
 from . import revenus
 from . import cotisations
+from . import regles
 
 import xlsxwriter
 
 class Bulletin:
-    def __init__(self, allocation_maladie_taux_reduit = False, taux_accidents_travail = 0.0, taux_versement_mobilite = 0.0, nb_salaries = 100):
+    def __init__(self, employeur_beneficie_taux_reduit_alloc_familiales = False, taux_accidents_travail = 0.0, taux_versement_mobilite = 0.0, nb_salaries = 100):
         self.revenus = []
         self.brut_salarial = 0.
         self.autres_revenus = 0.
@@ -13,7 +14,7 @@ class Bulletin:
         self.cotisations_salariales = 0.
         self.cotisations_patronales = 0.
         
-        self.allocation_maladie_taux_reduit = allocation_maladie_taux_reduit
+        self.allocations_familiales_taux_reduit = employeur_beneficie_taux_reduit_alloc_familiales
         self.taux_accidents_travail = taux_accidents_travail * .01
         self.nb_salaries = nb_salaries
         self.taux_mobilite = taux_versement_mobilite*.01
@@ -58,7 +59,7 @@ class Bulletin:
         elif cotisation == cotisations.MALADIE_REGIME_LOCAL:
             cotis = cotisations.maladie_regime_local(self.brut_salarial)
         elif cotisation == cotisations.ALLOCATIONS_FAMILIALES:
-            cotis = cotisations.allocations_familiales(self.brut_salarial, self.allocation_maladie_taux_reduit)
+            cotis = cotisations.allocations_familiales(self.brut_salarial, regles.allocs_fam_reduites(self.allocations_familiales_taux_reduit, self.brut_salarial))
         elif cotisation == cotisations.ACCIDENTS_TRAVAIL:
             cotis = cotisations.accidents_travail(self.brut_salarial, self.taux_accidents_travail)
         elif cotisation == cotisations.FNAL:

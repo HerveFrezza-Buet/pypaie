@@ -83,6 +83,8 @@ seuil_majoration_maladie                 = 2.5 * smic_mensuel_brut
 # calcul familial
 taux_allocations_familiales_patronal        = .0525
 taux_allocations_familiales_patronal_reduit = taux_allocations_familiales_patronal - 0.018
+def allocs_fam_reduites(employeur_beneficie_taux_reduit, brut_salarial):
+    return employeur_beneficie_taux_reduit and (brut_salarial < 2.5 * smic_mensuel_brut)
 
 # calcul accident
 taux_accident_travail_patronal        = .0525

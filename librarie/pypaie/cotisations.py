@@ -26,7 +26,7 @@ TAG_CSG_NONIMP = 'CSG déductible'
 TAG_CSG_IMP = 'CSG imposable'
 TAG_CRDS = 'CRDS'
 TAG_MALADIE_GENERAL = 'cotisation maladie'
-TAG_MALADIE_LOCAL = 'cotisation maladie ALS/MOS'
+TAG_MALADIE_LOCAL = 'cotisation maladie régime local'
 TAG_ALLOCATIONS_FAMILIALES = 'cotisation allocations familiales'
 TAG_ACCIDENTS_TRAVAIL = 'cotisation accidents du travail'
 TAG_FNAL = "cotisation fond national d'aide au logement"
@@ -139,7 +139,7 @@ def maladie_regime_local(brut_salarial):
 def allocations_familiales(brut_salarial, reduit):
     cotisations = []
     tag = TAG_ALLOCATIONS_FAMILIALES
-    if reduit:
+    if reduit :
         taux = regles.taux_allocations_familiales_patronal_reduit
         tag += ' (taux reduit)'
     else:
