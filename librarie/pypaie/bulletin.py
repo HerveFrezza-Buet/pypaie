@@ -6,6 +6,14 @@ import xlsxwriter
 
 class Bulletin:
     def __init__(self, employeur_beneficie_taux_reduit_alloc_familiales = False, taux_accidents_travail = 0.0, taux_versement_mobilite = 0.0, nb_salaries = 100):
+        self.clear()
+        
+        self.allocations_familiales_taux_reduit = employeur_beneficie_taux_reduit_alloc_familiales
+        self.taux_accidents_travail = taux_accidents_travail * .01
+        self.nb_salaries = nb_salaries
+        self.taux_mobilite = taux_versement_mobilite*.01
+
+    def clear(self):
         self.revenus = []
         self.brut_salarial = 0.
         self.autres_revenus = 0.
@@ -14,11 +22,6 @@ class Bulletin:
         self.cotisations_salariales = 0.
         self.cotisations_patronales = 0.
         
-        self.allocations_familiales_taux_reduit = employeur_beneficie_taux_reduit_alloc_familiales
-        self.taux_accidents_travail = taux_accidents_travail * .01
-        self.nb_salaries = nb_salaries
-        self.taux_mobilite = taux_versement_mobilite*.01
-
     def brut_patronal(self):
         return self.brut_salarial + self.autres_revenus + self.cotisations_patronales
 

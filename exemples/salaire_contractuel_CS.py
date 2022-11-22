@@ -10,6 +10,7 @@ bulletin_paie = pp.bulletin.Bulletin(employeur_beneficie_taux_reduit_alloc_famil
 
 # J'y ajoute les revenus.
 bulletin_paie += pp.revenus.traitement_brut(indice=mon_indice)
+bulletin_paie += pp.revenus.prime_brute(1000, 'Prime')
 bulletin_paie += pp.revenus.indemnite_de_residence(51.36) 
 bulletin_paie += pp.revenus.indemnite_pour_difficultes_administratives(mon_indice)
 bulletin_paie += pp.revenus.indemnite_hausse_CSG(1.94)

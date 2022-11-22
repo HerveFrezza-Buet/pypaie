@@ -27,6 +27,11 @@ def traitement_brut(montant=None, indice=None):
             'libelle': TAG_TRAITEMENT_BRUT,
             'montant': montant}
 
+def prime_brute(montant, libelle):
+    return {'type': TYPE_BRUT_SALARIAL,
+            'libelle': libelle,
+            'montant': montant}
+
 # Indemnite pour difficultés administratives
 def indemnite_pour_difficultes_administratives(indice):
     return {'type': TYPE_BRUT_SALARIAL,
