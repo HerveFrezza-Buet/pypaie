@@ -7,9 +7,10 @@ IRCANTEC = 'complementaire vieillesse IRCANTEC'
 CSG_CRDS = 'CSG CRDS'
 MALADIE_REGIME_GENERAL = 'cotisation maladie'
 MALADIE_REGIME_LOCAL = 'cotisation maladie (local)'
+ALLOCATIONS_FAMILIALES = 'allocations familiales'
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL])
+cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
@@ -21,6 +22,7 @@ TAG_CSG_IMP = 'CSG imposable'
 TAG_CRDS = 'CRDS'
 TAG_MALADIE_GENERAL = 'cotisation maladie'
 TAG_MALADIE_LOCAL = 'cotisation maladie ALS/MOS'
+TAG_ALLOCATIONS_FAMILIALES = 'allocations familiales'
 
 
 
@@ -102,18 +104,40 @@ def csg_crds(brut_salarial):
 
 def maladie_regime_general(brut_salarial):
     cotisations = []
+    tag = TAG_ALLOCATIONS_FAMILIALES
+    if reduit:
+        taux = regles.taux_allocations_familiales_patronal_reduit
+        tag += ' (taux reduit)'
+    else:
+        taux = regles.taux_allocations_familiales_patronal
+        tag += ' (taux plein)'
     cotisations.append({'type': TYPE_COTISATION_SOCIALE,
                         'libelle': TAG_MALADIE_GENERAL,
                         'salarial': 0.0,
-                        'patronal': taux_maladie_patronal_general * brut_salarial})
+                        'patronal': regles.taux_maladie_patronal_general * brut_salarial})
     return cotisations
     
 
 def maladie_regime_local(brut_salarial):
     cotisations = maladie_regime_general(brut_salarial)
     cotisations.append({'type': TYPE_COTISATION_SOCIALE,
-                        'libelle': TAG_MALADIE_GENERAL,
-                        'salarial': taux_maladie_salarial_local * brut_salarial,
+                        'libelle': TAG_MALADIE_LOCAL,
+                        'salarial': regles.taux_maladie_salarial_local * brut_salarial,
                         'patronal': 0.0})
     return cotisations
-        
+
+
+def allocations_familiales(brut_salarial, reduit):
+    cotisations = []
+    tag = TAG_ALLOCATIONS_FAMILIALES
+    if reduit:
+        taux = regles.taux_allocations_familiales_patronal_reduit
+        tag += ' (taux reduit)'
+    else:
+        taux = regles.taux_allocations_familiales_patronal
+        tag += ' (taux plein)'
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': tag,
+                        'salarial': 0.0,
+                        'patronal': taux * brut_salarial})
+    return cotisations

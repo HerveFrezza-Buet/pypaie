@@ -1,3 +1,5 @@
+
+
 # La valeur en brut salarial du point d'incice.
 valeur_point_indice = 4.85003
 
@@ -68,3 +70,8 @@ def calcul_assiette_csg_crds(brut_salarial):
 # calcul maladie
 taux_maladie_patronal_general = .07
 taux_maladie_salarial_local   = .013
+
+# calcul familial
+taux_allocations_familiales_patronal        = .0525
+taux_allocations_familiales_patronal_reduit = taux_allocations_familiales_patronal - 0.018
+

@@ -16,6 +16,9 @@ bulletin_paie += pp.revenus.remboursement_psc()
 bulletin_paie -= pp.cotisations.VIEILLESSE_PRIVE
 # bulletin_paie -= pp.cotisations.AGIRC_ARRCO_PRIVE
 bulletin_paie -= pp.cotisations.IRCANTEC
+bulletin_paie.allocation_maladie_taux_reduit = False
+bulletin_paie -= pp.cotisations.MALADIE_REGIME_LOCAL
+bulletin_paie -= pp.cotisations.ALLOCATIONS_FAMILIALES
 bulletin_paie -= pp.cotisations.CSG_CRDS
 
 # Je montre le résultat

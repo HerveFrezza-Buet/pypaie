@@ -12,7 +12,8 @@ class Bulletin:
         self.cotisations = []
         self.cotisations_salariales = 0.
         self.cotisations_patronales = 0.
-
+        
+        self.allocation_maladie_taux_reduit = False
 
     def brut_patronal(self):
         return self.brut_salarial + self.autres_revenus + self.cotisations_patronales
@@ -51,6 +52,8 @@ class Bulletin:
             cotis = cotisations.maladie_regime_general(self.brut_salarial)
         elif cotisation == cotisations.MALADIE_REGIME_LOCAL:
             cotis = cotisations.maladie_regime_local(self.brut_salarial)
+        elif cotisation == cotisations.ALLOCATIONS_FAMILIALES:
+            cotis = cotisations.allocations_familiales(self.brut_salarial, self.allocation_maladie_taux_reduit)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')
         
