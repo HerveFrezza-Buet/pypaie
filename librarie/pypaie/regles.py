@@ -1,4 +1,5 @@
-
+# SMIC
+smic_mensuel_brut = 1645.48
 
 # La valeur en brut salarial du point d'incice.
 valeur_point_indice = 4.85003
@@ -68,10 +69,25 @@ def calcul_assiette_csg_crds(brut_salarial):
 
 
 # calcul maladie
-taux_maladie_patronal_general = .07
-taux_maladie_salarial_local   = .013
+taux_maladie_patronal_general_reduit     = .07
+taux_maladie_patronal_general_majoration = .06
+taux_maladie_salarial_local              = .013
+seuil_majoration_maladie                 = 2.5 * smic_mensuel_brut
 
 # calcul familial
 taux_allocations_familiales_patronal        = .0525
 taux_allocations_familiales_patronal_reduit = taux_allocations_familiales_patronal - 0.018
+
+# calcul accident
+taux_accident_travail_patronal        = .0525
+
+# calcul FNAL
+seuil_nb_salaries_fnal = 50
+def calcul_cotis_fnal(brut_salarial, nb_salaries):
+    if nb_salaries < 50:
+        return 0.001 * min(brut_salarial, plafond_securite_sociale)
+    return 0.005 * brut_salarial
+
+# calcul Solidarité autonomie
+taux_cnsa_patronal = 0.003
 

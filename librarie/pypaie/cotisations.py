@@ -5,12 +5,16 @@ VIEILLESSE_PRIVE = 'cotisation vieillesse prive'
 AGIRC_ARRCO = 'complementaire vieillesse AGIRC-ARRCO'
 IRCANTEC = 'complementaire vieillesse IRCANTEC'
 CSG_CRDS = 'CSG CRDS'
-MALADIE_REGIME_GENERAL = 'cotisation maladie'
-MALADIE_REGIME_LOCAL = 'cotisation maladie (local)'
+MALADIE_REGIME_GENERAL = 'maladie'
+MALADIE_REGIME_LOCAL = 'maladie (local)'
 ALLOCATIONS_FAMILIALES = 'allocations familiales'
+ACCIDENTS_TRAVAIL = 'accidents travail'
+FNAL = "fond national d'aide au logement"
+CNSA = "cnsa"
+MOBILITE = "mobilité"
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES])
+cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
@@ -22,7 +26,11 @@ TAG_CSG_IMP = 'CSG imposable'
 TAG_CRDS = 'CRDS'
 TAG_MALADIE_GENERAL = 'cotisation maladie'
 TAG_MALADIE_LOCAL = 'cotisation maladie ALS/MOS'
-TAG_ALLOCATIONS_FAMILIALES = 'allocations familiales'
+TAG_ALLOCATIONS_FAMILIALES = 'cotisation allocations familiales'
+TAG_ACCIDENTS_TRAVAIL = 'cotisation accidents du travail'
+TAG_FNAL = "cotisation fond national d'aide au logement"
+TAG_CNSA = "cotisation caisse nationale de solidarité pour l'autonomie"
+TAG_MOBILITE = "versement mobilité"
 
 
 
@@ -104,17 +112,15 @@ def csg_crds(brut_salarial):
 
 def maladie_regime_general(brut_salarial):
     cotisations = []
-    tag = TAG_ALLOCATIONS_FAMILIALES
-    if reduit:
-        taux = regles.taux_allocations_familiales_patronal_reduit
-        tag += ' (taux reduit)'
-    else:
-        taux = regles.taux_allocations_familiales_patronal
-        tag += ' (taux plein)'
     cotisations.append({'type': TYPE_COTISATION_SOCIALE,
                         'libelle': TAG_MALADIE_GENERAL,
                         'salarial': 0.0,
-                        'patronal': regles.taux_maladie_patronal_general * brut_salarial})
+                        'patronal': regles.taux_maladie_patronal_general_reduit * brut_salarial})
+    if brut_salarial > regles.seuil_majoration_maladie:
+        cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                            'libelle': TAG_MALADIE_GENERAL + ' (majoré)',
+                            'salarial': 0.0,
+                            'patronal': regles.taux_maladie_patronal_general_majoration * brut_salarial})
     return cotisations
     
 
@@ -138,6 +144,38 @@ def allocations_familiales(brut_salarial, reduit):
         tag += ' (taux plein)'
     cotisations.append({'type': TYPE_COTISATION_SOCIALE,
                         'libelle': tag,
+                        'salarial': 0.0,
+                        'patronal': taux * brut_salarial})
+    return cotisations
+
+def accidents_travail(brut_salarial, taux):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_ACCIDENTS_TRAVAIL,
+                        'salarial': 0.0,
+                        'patronal': taux * brut_salarial})
+    return cotisations
+
+def fnal(brut_salarial, nb_salaries):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_FNAL,
+                        'salarial': 0.0,
+                        'patronal': regles.calcul_cotis_fnal(brut_salarial, nb_salaries)})
+    return cotisations
+
+def cnsa(brut_salarial):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_CNSA,
+                        'salarial': 0.0,
+                        'patronal': regles.taux_cnsa_patronal * brut_salarial})
+    return cotisations
+    
+def mobilite(brut_salarial, taux):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_MOBILITE,
                         'salarial': 0.0,
                         'patronal': taux * brut_salarial})
     return cotisations

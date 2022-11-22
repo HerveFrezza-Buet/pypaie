@@ -4,7 +4,7 @@ from . import cotisations
 import xlsxwriter
 
 class Bulletin:
-    def __init__(self):
+    def __init__(self, allocation_maladie_taux_reduit = False, taux_accidents_travail = 0.0, taux_versement_mobilite = 0.0, nb_salaries = 100):
         self.revenus = []
         self.brut_salarial = 0.
         self.autres_revenus = 0.
@@ -13,7 +13,10 @@ class Bulletin:
         self.cotisations_salariales = 0.
         self.cotisations_patronales = 0.
         
-        self.allocation_maladie_taux_reduit = False
+        self.allocation_maladie_taux_reduit = allocation_maladie_taux_reduit
+        self.taux_accidents_travail = taux_accidents_travail * .01
+        self.nb_salaries = nb_salaries
+        self.taux_mobilite = taux_versement_mobilite*.01
 
     def brut_patronal(self):
         return self.brut_salarial + self.autres_revenus + self.cotisations_patronales
@@ -54,6 +57,14 @@ class Bulletin:
             cotis = cotisations.maladie_regime_local(self.brut_salarial)
         elif cotisation == cotisations.ALLOCATIONS_FAMILIALES:
             cotis = cotisations.allocations_familiales(self.brut_salarial, self.allocation_maladie_taux_reduit)
+        elif cotisation == cotisations.ACCIDENTS_TRAVAIL:
+            cotis = cotisations.accidents_travail(self.brut_salarial, self.taux_accidents_travail)
+        elif cotisation == cotisations.FNAL:
+            cotis = cotisations.fnal(self.brut_salarial, self.nb_salaries)
+        elif cotisation == cotisations.CNSA:
+            cotis = cotisations.cnsa(self.brut_salarial)
+        elif cotisation == cotisations.MOBILITE:
+            cotis = cotisations.mobilite(self.brut_salarial, self.taux_mobilite)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')
         
