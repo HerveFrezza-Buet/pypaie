@@ -1,3 +1,57 @@
+
+CATEGORIE_REVENU_TRAITEMENT_BRUT =   1
+CATEGORIE_REVENU_PRIME           =   2
+CATEGORIE_REVENU_TRANSPORT       =   4
+CATEGORIE_REVENU_PSC             =   8
+CATEGORIE_REVENU_AUTRE           =  16
+CATEGORIE_REVENU_LIBRE           =  32 # 2 x le dernier de la liste
+
+ASSIETTE_COTISATIONS_PUBLIC = CATEGORIE_REVENU_TRAITEMENT_BRUT
+ASSIETTE_COTISATIONS_PRIVE  = CATEGORIE_REVENU_TRAITEMENT_BRUT | CATEGORIE_REVENU_PRIME | CATEGORIE_REVENU_AUTRE
+ASSIETTE_CSG_PUBLIC         = CATEGORIE_REVENU_TRAITEMENT_BRUT | CATEGORIE_REVENU_PRIME | CATEGORIE_REVENU_AUTRE | CATEGORIE_REVENU_PSC
+ASSIETTE_CSG_PRIVE          = ASSIETTE_CSG_PUBLIC
+ASSIETTE_TOUT               = CATEGORIE_REVENU_LIBRE - 1
+
+class Assiette:
+    def __init__(self):
+        self.clear()
+
+    def clear(self):
+        self.traitement_brut = 0.0
+        self.prime           = 0.0
+        self.transport       = 0.0
+        self.psc             = 0.0
+        self.autre           = 0.0
+
+    def declare(self, categorie, montant):
+        if categorie == CATEGORIE_REVENU_TRAITEMENT_BRUT:
+            self.traitement_brut += montant
+        elif categorie == CATEGORIE_REVENU_PRIME:
+            self.prime += montant
+        elif categorie == CATEGORIE_REVENU_TRANSPORT:
+            self.transport += montant
+        elif categorie == CATEGORIE_REVENU_PSC:
+            self.psc += montant
+        elif categorie == CATEGORIE_REVENU_AUTRE:
+            self.autre += montant
+        else:
+            raise ValueError(f'Assiette.declare({categorie}, {montant}) non géré.')
+
+    def montant(self, assiette):
+        res = 0.0
+        if assiette & CATEGORIE_REVENU_TRAITEMENT_BRUT :
+            res += self.traitement_brut
+        if assiette & CATEGORIE_REVENU_PRIME :
+            res += self.prime      
+        if assiette & CATEGORIE_REVENU_TRANSPORT :
+            res += self.transport    
+        if assiette & CATEGORIE_REVENU_PSC :
+            res += self.psc          
+        if assiette & CATEGORIE_REVENU_AUTRE :
+            res += self.autre
+        return res
+        
+
 # SMIC
 smic_mensuel_brut = 1645.48
 
@@ -31,6 +85,18 @@ taux_vieillesse_patronal_plafonnee   = 0.0855
 
 taux_vieillesse_salarial_deplafonnee = 0.004
 taux_vieillesse_patronal_deplafonnee = 0.019
+
+# calcul retraite publique CRNACL
+taux_crnacl_salarial = 0.111
+taux_crnacl_patronal = 0.3065
+
+# calcul retraite complémentaire RAFP
+taux_rafp_seuil = .2
+taux_rafp_salarial = .05
+taux_rafp_patronal = .05
+def calcul_assiette_RAFP(traitement_brut, autres_revenus):
+    return min(taux_rafp_seuil * traitement_brut, autres_revenus)
+    
 
 # calcul retraite privée complementaire AGIRC-ARRCO
 
@@ -100,3 +166,5 @@ def calcul_cotis_fnal(brut_salarial, nb_salaries):
 # calcul Solidarité autonomie
 taux_cnsa_patronal = 0.003
 
+# Calcul contribution ATI
+taux_ati_patronal = 0.0032

@@ -6,14 +6,15 @@ import xlsxwriter
 
 class Bulletin:
     def __init__(self,
-                 date_recrutement = 2018,
+                 fonctionnaire = True,
                  employeur_beneficie_taux_reduit_alloc_familiales = False,
                  taux_accidents_travail = 0.0,
                  taux_versement_mobilite = 0.0,
                  taux_indemnite_residence = 1.00,
                  nb_salaries = 100):
         self.clear()
-        
+
+        self.fonctionnaire = fonctionnaire
         self.allocations_familiales_taux_reduit = employeur_beneficie_taux_reduit_alloc_familiales
         self.taux_accidents_travail = taux_accidents_travail * .01
         self.nb_salaries = nb_salaries
@@ -21,20 +22,17 @@ class Bulletin:
         self.taux_indemnite_residence = taux_indemnite_residence * .01
 
     def clear(self):
+        self.assiette = regles.Assiette()
         self.revenus = []
-        self.traitement_brut = None
-        self.assiette_brut = 0.
-        self.autres_revenus = 0.
-
         self.cotisations = []
         self.cotisations_salariales = 0.
         self.cotisations_patronales = 0.
         
     def brut_patronal(self):
-        return self.assiette_brut + self.autres_revenus + self.cotisations_patronales
+        return self.assiette.montant(regles.ASSIETTE_TOUT) + self.cotisations_patronales
 
     def net_avant_impots(self):
-        return self.assiette_brut + self.autres_revenus - self.cotisations_salariales
+        return self.assiette.montant(regles.ASSIETTE_TOUT) - self.cotisations_salariales
     
     def percoit(self, revenu):
         """
@@ -43,50 +41,71 @@ class Bulletin:
 
         # Pre-traitements:
         if revenu['libelle'] == revenus.TAG_INDEMNITE_RESIDENCE:
-            if self.traitement_brut == None:
+            if self.assiette.traitement_brut == 0:
                 raise ValueError("Renseigner le traitement brut avant l'indemnité de résidence")
-            revenu['montant'] = self.traitement_brut * self.taux_indemnite_residence
-        if revenu['libelle'] == revenus.TAG_TRAITEMENT_BRUT:
-            if self.traitement_brut == None:
-                self.traitement_brut  = revenu['montant']
-            else:
-                self.traitement_brut += revenu['montant']
+            revenu['montant'] = self.assiette.traitement_brut * self.taux_indemnite_residence
         
         self.revenus.append(revenu)
-        if revenu['assiette']:
-            self.assiette_brut  += revenu['montant']
-        else:
-            self.autres_revenus += revenu['montant']
+        self.assiette.declare(revenu['categorie'], revenu['montant'])
 
     def cotise(self, cotisation):
         if cotisation not in cotisations.cotisations:
             raise ValueError(f'Bulletin.cotise (-=) : type de cotisation -- {cotisation} -- non géré, devrait être dans {cotisations.cotisations}.')
         if cotisation == cotisations.CHOMAGE:
-            cotis = cotisations.chomage(self.assiette_brut)
+            cotis = cotisations.chomage(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
         elif cotisation == cotisations.VIEILLESSE_PRIVE:
-            cotis = cotisations.vieillesse_prive(self.assiette_brut)
+            cotis = cotisations.vieillesse_prive(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
+        elif cotisation == cotisations.CRNACL:
+            cotis = cotisations.crnacl(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC))
+        elif cotisation == cotisations.RAFP:
+            traitement = self.assiette.traitement_brut
+            cotis = cotisations.rafp(traitement, self.assiette.montant(regles.ASSIETTE_TOUT) - traitement)
+        elif cotisation == cotisations.ATI:
+            cotis = cotisations.ati(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC))
+        elif cotisation == cotisations.TRANSFERT_PRIMES_POINTS:
+            cotis = cotisations.transfert_primes_points(self.transfert_primes_points)
         elif cotisation == cotisations.AGIRC_ARRCO:
-            cotis = cotisations.agirc_arrco(self.assiette_brut)
+            cotis = cotisations.agirc_arrco(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
         elif cotisation == cotisations.IRCANTEC:
-            cotis = cotisations.ircantec(self.assiette_brut)
+            cotis = cotisations.ircantec(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
         elif cotisation == cotisations.CSG_CRDS:
-            cotis = cotisations.csg_crds(self.assiette_brut + self.autres_revenus) # !!!!
-        elif cotisation == cotisations.MALADIE_REGIME_GENERAL_PRIVE:
-            cotis = cotisations.maladie_regime_general(self.assiette_brut, False)
-        elif cotisation == cotisations.MALADIE_REGIME_GENERAL_PUBLIC:
-            cotis = cotisations.maladie_regime_general(self.assiette_brut, True)
+            if self.fonctionnaire:
+                cotis = cotisations.csg_crds(self.assiette.montant(regles.ASSIETTE_CSG_PUBLIC))
+            else:
+                cotis = cotisations.csg_crds(self.assiette.montant(regles.ASSIETTE_CSG_PRIVE))
+        elif cotisation == cotisations.MALADIE_REGIME_GENERAL:
+            if self.fonctionnaire:
+                cotis = cotisations.maladie_regime_general(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC), True)
+            else:
+                cotis = cotisations.maladie_regime_general(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE), False)
         elif cotisation == cotisations.MALADIE_REGIME_LOCAL:
-            cotis = cotisations.maladie_regime_local(self.assiette_brut)
+            cotis = cotisations.maladie_regime_local(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
         elif cotisation == cotisations.ALLOCATIONS_FAMILIALES:
-            cotis = cotisations.allocations_familiales(self.assiette_brut, regles.allocs_fam_reduites(self.allocations_familiales_taux_reduit, self.assiette_brut))
+            if self.fonctionnaire:
+                assiette = self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC)
+            else:
+                assiette = self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE)
+            cotis = cotisations.allocations_familiales(assiette, regles.allocs_fam_reduites(self.allocations_familiales_taux_reduit, assiette))
         elif cotisation == cotisations.ACCIDENTS_TRAVAIL:
-            cotis = cotisations.accidents_travail(self.assiette_brut, self.taux_accidents_travail)
+            if self.fonctionnaire:
+                cotis = cotisations.accidents_travail(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC), self.taux_accidents_travail)
+            else:
+                cotis = cotisations.accidents_travail(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE), self.taux_accidents_travail)
         elif cotisation == cotisations.FNAL:
-            cotis = cotisations.fnal(self.assiette_brut, self.nb_salaries)
+            if self.fonctionnaire:
+                cotis = cotisations.fnal(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC), self.nb_salaries)
+            else:
+                cotis = cotisations.fnal(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE), self.nb_salaries)
         elif cotisation == cotisations.CNSA:
-            cotis = cotisations.cnsa(self.assiette_brut)
+            if self.fonctionnaire:
+                cotis = cotisations.cnsa(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC))
+            else:
+                cotis = cotisations.cnsa(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
         elif cotisation == cotisations.MOBILITE:
-            cotis = cotisations.mobilite(self.assiette_brut, self.taux_mobilite)
+            if self.fonctionnaire:
+                cotis = cotisations.mobilite(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC), self.taux_mobilite)
+            else:
+                cotis = cotisations.mobilite(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE), self.taux_mobilite)
         else:
             raise ValueError(f'Bug : cotisation {cotisation} non traîtée.')
         

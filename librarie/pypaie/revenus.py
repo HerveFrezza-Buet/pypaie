@@ -22,31 +22,31 @@ def traitement_brut(montant=None, indice=None):
         montant = regles.valeur_point_indice* indice
     return {'libelle': TAG_TRAITEMENT_BRUT,
             'montant': montant,
-            'assiette' : True}
+            'categorie': regles.CATEGORIE_REVENU_TRAITEMENT_BRUT}
 
-def prime(montant, libelle, inclus_dans_assiette):
+def prime(montant, libelle):
     return {'libelle': libelle,
             'montant': montant,
-            'assiette' : inclus_dans_assiette}
+            'categorie': regles.CATEGORIE_REVENU_PRIME}
 
 # Indemnite pour difficultés administratives
-def indemnite_pour_difficultes_administratives(indice, inclus_dans_assiette=False):
+def indemnite_pour_difficultes_administratives(indice):
     return {'libelle': TAG_INDEMNITE_DIFFICULTES_ADMINISTRATIVES,
             'montant': regles.ind_diff_adm(indice),
-            'assiette' : inclus_dans_assiette}
+            'categorie': regles.CATEGORIE_REVENU_AUTRE}
 
-def indemnite_de_residence(inclus_dans_assiette=False):
+def indemnite_de_residence():
     return {'libelle': TAG_INDEMNITE_RESIDENCE,
-            'assiette' : inclus_dans_assiette}
+            'categorie': regles.CATEGORIE_REVENU_AUTRE}
 
-def indemnite_hausse_CSG(montant, inclus_dans_assiette=False):
+def indemnite_hausse_CSG(montant):
     return {'libelle': TAG_INDEMNITE_COMPENSATION_HAUSSE_CSG,
             'montant': montant,
-            'assiette' : inclus_dans_assiette}
+            'categorie': regles.CATEGORIE_REVENU_AUTRE}
 
-def remboursement_psc(inclus_dans_assiette=False):
+def remboursement_psc():
     return {'libelle': TAG_REMBOURSEMENT_FORFAITAIRE_PSC,
             'montant': regles.remboursement_forfaitaire_psc,
-            'assiette' : inclus_dans_assiette}
+            'categorie': regles.CATEGORIE_REVENU_PSC}
 
 
