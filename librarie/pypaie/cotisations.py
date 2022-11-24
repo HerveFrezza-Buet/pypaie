@@ -5,8 +5,9 @@ VIEILLESSE_PRIVE = 'cotisation vieillesse prive'
 AGIRC_ARRCO = 'complementaire vieillesse AGIRC-ARRCO'
 IRCANTEC = 'complementaire vieillesse IRCANTEC'
 CSG_CRDS = 'CSG CRDS'
-MALADIE_REGIME_GENERAL = 'maladie'
-MALADIE_REGIME_LOCAL = 'maladie (local)'
+MALADIE_REGIME_GENERAL_PRIVE = 'maladie Priv'
+MALADIE_REGIME_GENERAL_PUBLIC = 'maladie Pub'
+MALADIE_REGIME_LOCAL = 'maladie Loc'
 ALLOCATIONS_FAMILIALES = 'allocations familiales'
 ACCIDENTS_TRAVAIL = 'accidents travail'
 FNAL = "fond national d'aide au logement"
@@ -15,7 +16,7 @@ MOBILITE = "mobilité"
 CHOMAGE = 'chômage'
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE, CHOMAGE])
+cotisations = set([VIEILLESSE_PRIVE, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL_PRIVE, MALADIE_REGIME_GENERAL_PUBLIC, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE, CHOMAGE])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
@@ -25,7 +26,8 @@ TAG_IRCANTEC = 'cotisation compl. vieillesse IRCANTEC'
 TAG_CSG_NONIMP = 'CSG déductible'
 TAG_CSG_IMP = 'CSG imposable'
 TAG_CRDS = 'CRDS'
-TAG_MALADIE_GENERAL = 'cotisation maladie'
+TAG_MALADIE_GENERAL_PRIVE = 'cotisation maladie (privé)'
+TAG_MALADIE_GENERAL_PUBLIC = 'cotisation maladie (public)'
 TAG_MALADIE_LOCAL = 'cotisation maladie régime local'
 TAG_ALLOCATIONS_FAMILIALES = 'cotisation allocations familiales'
 TAG_ACCIDENTS_TRAVAIL = 'cotisation accidents du travail'
@@ -113,22 +115,28 @@ def csg_crds(brut_salarial):
 
     return cotisations
 
-def maladie_regime_general(brut_salarial):
+def maladie_regime_general(brut_salarial, public):
     cotisations = []
-    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
-                        'libelle': TAG_MALADIE_GENERAL,
-                        'salarial': 0.0,
-                        'patronal': regles.taux_maladie_patronal_general_reduit * brut_salarial})
-    if brut_salarial > regles.seuil_majoration_maladie:
+    if public:
         cotisations.append({'type': TYPE_COTISATION_SOCIALE,
-                            'libelle': TAG_MALADIE_GENERAL + ' (majoré)',
+                            'libelle': TAG_MALADIE_GENERAL_PUBLIC,
                             'salarial': 0.0,
-                            'patronal': regles.taux_maladie_patronal_general_majoration * brut_salarial})
+                            'patronal': regles.taux_maladie_patronal_public * brut_salarial})
+    else:
+        cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                            'libelle': TAG_MALADIE_GENERAL_PRIVE,
+                            'salarial': 0.0,
+                            'patronal': regles.taux_maladie_patronal_prive_reduit * brut_salarial})
+        if brut_salarial > regles.seuil_majoration_maladie:
+            cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                                'libelle': TAG_MALADIE_GENERAL_PRIVE + ' majoré',
+                                'salarial': 0.0,
+                                'patronal': regles.taux_maladie_patronal_prive_majoration * brut_salarial})
     return cotisations
     
 
 def maladie_regime_local(brut_salarial):
-    cotisations = maladie_regime_general(brut_salarial)
+    cotisations = maladie_regime_general(brut_salarial, False)
     cotisations.append({'type': TYPE_COTISATION_SOCIALE,
                         'libelle': TAG_MALADIE_LOCAL,
                         'salarial': regles.taux_maladie_salarial_local * brut_salarial,

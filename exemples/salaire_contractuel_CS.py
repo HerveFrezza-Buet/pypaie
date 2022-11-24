@@ -10,11 +10,11 @@ bulletin_paie = pp.bulletin.Bulletin(employeur_beneficie_taux_reduit_alloc_famil
 
 # J'y ajoute les revenus.
 bulletin_paie += pp.revenus.traitement_brut(indice=mon_indice)
-bulletin_paie += pp.revenus.prime_brute(1000, 'Prime')
-bulletin_paie += pp.revenus.indemnite_de_residence() 
-bulletin_paie += pp.revenus.indemnite_pour_difficultes_administratives(mon_indice)
-bulletin_paie += pp.revenus.indemnite_hausse_CSG(1.94)
-bulletin_paie += pp.revenus.remboursement_psc()
+bulletin_paie += pp.revenus.prime(1000, 'Prime',                                   inclus_dans_assiette=True )
+bulletin_paie += pp.revenus.indemnite_de_residence(                                inclus_dans_assiette=True ) 
+bulletin_paie += pp.revenus.indemnite_pour_difficultes_administratives(mon_indice, inclus_dans_assiette=True )
+bulletin_paie += pp.revenus.indemnite_hausse_CSG(1.94,                             inclus_dans_assiette=True )
+bulletin_paie += pp.revenus.remboursement_psc(                                     inclus_dans_assiette=False)
 
 # Je mentionne les cotisations.
 bulletin_paie -= pp.cotisations.VIEILLESSE_PRIVE

@@ -75,10 +75,11 @@ def calcul_assiette_csg_crds(brut_salarial):
 
 
 # calcul maladie
-taux_maladie_patronal_general_reduit     = .07
-taux_maladie_patronal_general_majoration = .06
-taux_maladie_salarial_local              = .013
-seuil_majoration_maladie                 = 2.5 * smic_mensuel_brut
+taux_maladie_patronal_prive_reduit     = .07
+taux_maladie_patronal_prive_majoration = .06
+taux_maladie_patronal_public           = .097
+taux_maladie_salarial_local            = .013
+seuil_majoration_maladie               = 2.5 * smic_mensuel_brut
 
 # calcul familial
 taux_allocations_familiales_patronal        = .0525
