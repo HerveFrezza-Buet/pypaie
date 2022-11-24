@@ -38,10 +38,9 @@ def indemnite_pour_difficultes_administratives(indice):
             'libelle': TAG_INDEMNITE_DIFFICULTES_ADMINISTRATIVES,
             'montant': regles.ind_diff_adm(indice)}
 
-def indemnite_de_residence(montant):
+def indemnite_de_residence():
     return {'type': TYPE_BRUT_SALARIAL,
-            'libelle': TAG_INDEMNITE_RESIDENCE,
-            'montant': montant}
+            'libelle': TAG_INDEMNITE_RESIDENCE}
 
 def indemnite_hausse_CSG(montant):
     return {'type': TYPE_BRUT_SALARIAL,

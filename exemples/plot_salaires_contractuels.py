@@ -18,7 +18,7 @@ nets = []
 for indice in indices:
     bulletin_paie.clear()
     bulletin_paie += pp.revenus.traitement_brut(indice=indice)
-    bulletin_paie += pp.revenus.indemnite_de_residence(.01*bulletin_paie.brut_salarial) 
+    bulletin_paie += pp.revenus.indemnite_de_residence() 
     bulletin_paie += pp.revenus.indemnite_pour_difficultes_administratives(indice)
     bulletin_paie += pp.revenus.indemnite_hausse_CSG(2.00)
     bulletin_paie += pp.revenus.remboursement_psc()

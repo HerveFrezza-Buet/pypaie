@@ -5,16 +5,18 @@ from . import regles
 import xlsxwriter
 
 class Bulletin:
-    def __init__(self, employeur_beneficie_taux_reduit_alloc_familiales = False, taux_accidents_travail = 0.0, taux_versement_mobilite = 0.0, nb_salaries = 100):
+    def __init__(self, employeur_beneficie_taux_reduit_alloc_familiales = False, taux_accidents_travail = 0.0, taux_versement_mobilite = 0.0, taux_indemnite_residence = 1.00, nb_salaries = 100):
         self.clear()
         
         self.allocations_familiales_taux_reduit = employeur_beneficie_taux_reduit_alloc_familiales
         self.taux_accidents_travail = taux_accidents_travail * .01
         self.nb_salaries = nb_salaries
         self.taux_mobilite = taux_versement_mobilite*.01
+        self.taux_indemnite_residence = taux_indemnite_residence * .01
 
     def clear(self):
         self.revenus = []
+        self.traitement_brut = None
         self.brut_salarial = 0.
         self.autres_revenus = 0.
 
@@ -32,6 +34,18 @@ class Bulletin:
         """
         Ajoute un revenu
         """
+
+        # Pre-traitements:
+        if revenu['libelle'] == revenus.TAG_INDEMNITE_RESIDENCE:
+            if self.traitement_brut == None:
+                raise ValueError("Renseigner le traitement brut avant l'indemnité de résidence")
+            revenu['montant'] = self.traitement_brut * self.taux_indemnite_residence
+        if revenu['libelle'] == revenus.TAG_TRAITEMENT_BRUT:
+            if self.traitement_brut == None:
+                self.traitement_brut  = revenu['montant']
+            else:
+                self.traitement_brut += revenu['montant']
+        
         if revenu['type'] == revenus.TYPE_BRUT_SALARIAL:
             self.revenus.append(revenu)
             self.brut_salarial += revenu['montant']
