@@ -7,7 +7,7 @@ class Cotisation(ligne.Ligne):
 
 class CSG_CRDS(Cotisation):
     def __init__(self):
-        super.__init__('CSG-CRDS')
+        super().__init__('CSG-CRDS')
 
     def _cotisation_salariale(self):
         return self.deductible + self.non_deductible + self.crds

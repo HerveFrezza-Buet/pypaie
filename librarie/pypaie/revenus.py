@@ -12,7 +12,7 @@ class TraitementBrut(Revenu):
     def __init__(self, montant):
         super().__init__('Traitement brut', montant)
 
-    def cotise(self, assiettes):
+    def cotise(self, assiettes, mode):
         assiettes.cotisation_traitement_brut(self._brut(), mode)
         
     def _brut(self):
@@ -28,7 +28,7 @@ class IndemniteResidence(Revenu):
         self.taux = taux * .01
         super().__init__('Indemnité de résidence', traitement_brut._brut() * self.taux)
         
-    def cotise(self, assiettes):
+    def cotise(self, assiettes, mode):
         assiettes.cotisation_traitement_brut(self._brut(), mode)
         
     def _brut(self):
@@ -38,7 +38,7 @@ class IndemniteDifficultesAdministratives(Revenu):
     def __init__(self, indice):
         super().__init__('Indemnité difficultés administratives', regles.indemnite_difficultes_administratives(indice))
         
-    def cotise(self, assiettes):
+    def cotise(self, assiettes, mode):
         assiettes.cotisation_traitement_brut(self._brut(), mode)
         
     def _brut(self):
@@ -48,7 +48,7 @@ class IndemniteCompensationHausseCSG(Revenu):
     def __init__(self, montant):
         super().__init__('Indemnité de compensation hausse CSG', montant)
         
-    def cotise(self, assiettes):
+    def cotise(self, assiettes, mode):
         assiettes.cotisation_traitement_brut(self._brut(), mode)
         
     def _brut(self):
@@ -58,7 +58,7 @@ class RemboursementPSC(Revenu):
     def __init__(self):
         super().__init__('Remboursement forfaitaire de la protection sociale complémentaire', regles.remboursement_forfaitaire_psc)
         
-    def cotise(self, assiettes):
+    def cotise(self, assiettes, mode):
         assiettes.cotisation_psc(self._brut(), mode)
         
     def _brut(self):

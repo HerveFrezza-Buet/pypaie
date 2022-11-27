@@ -11,7 +11,7 @@ def indemnite_difficultes_administratives(indice):
         return 1.83
     if indice <= 770:
         return 2.28
-    return 3.05
+    return 3.04
 
 # Un remboursement mensuel forfaitaire de la protection sociale complémentaire
 remboursement_forfaitaire_psc = 15.00
@@ -42,6 +42,6 @@ class Assiettes:
         self.csg              += montant
         
     def cotisation_psc(self, montant, mode):
-        pass
+        self.csg += montant
         
         
