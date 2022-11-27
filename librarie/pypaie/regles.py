@@ -90,6 +90,10 @@ taux_vieillesse_patronal_deplafonnee = 0.019
 taux_crnacl_salarial = 0.111
 taux_crnacl_patronal = 0.3065
 
+# calcul retraite publique pension civile (PC)
+taux_pc_salarial = 0.111
+taux_pc_patronal = 0.7428
+
 # calcul retraite complémentaire RAFP
 taux_rafp_seuil = .2
 taux_rafp_salarial = .05

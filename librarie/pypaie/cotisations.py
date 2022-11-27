@@ -4,6 +4,7 @@ from . import regles
 VIEILLESSE_PRIVE = 'cotisation vieillesse prive'
 CRNACL = 'crnacl'
 RAFP = 'rafp'
+PC = 'pc'
 AGIRC_ARRCO = 'complementaire vieillesse AGIRC-ARRCO'
 IRCANTEC = 'complementaire vieillesse IRCANTEC'
 CSG_CRDS = 'CSG CRDS'
@@ -19,13 +20,14 @@ TRANSFERT_PRIMES_POINTS = 'transfert pp'
 ATI = 'ati'
 
 # Ensemble des cotisations connues par pypaie
-cotisations = set([VIEILLESSE_PRIVE, CRNACL, RAFP, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE, CHOMAGE, TRANSFERT_PRIMES_POINTS, ATI])
+cotisations = set([VIEILLESSE_PRIVE, CRNACL, RAFP, PC, AGIRC_ARRCO, IRCANTEC, CSG_CRDS, MALADIE_REGIME_GENERAL, MALADIE_REGIME_LOCAL, ALLOCATIONS_FAMILIALES, ACCIDENTS_TRAVAIL, FNAL, CNSA, MOBILITE, CHOMAGE, TRANSFERT_PRIMES_POINTS, ATI])
 
 TYPE_COTISATION_SOCIALE = 'cotisation sociale'
 
 TAG_VIEILLESSE = 'cotisation vieillesse'
 TAG_CRNACL = 'cotisation retraite CRNACL'
 TAG_RAFP = 'cotisation retraite compl. RAFP'
+TAG_PC = 'cotisation pension civile (PC)'
 TAG_AGIRC_ARRCO = 'cotisation compl. vieillesse AGIRC-ARRCO'
 TAG_IRCANTEC = 'cotisation compl. vieillesse IRCANTEC'
 TAG_CSG_NONIMP = 'CSG déductible'
@@ -86,6 +88,14 @@ def rafp(traitement_brut, autres_revenus):
                         'libelle': TAG_RAFP,
                         'salarial': regles.taux_rafp_salarial * assiette,
                         'patronal': regles.taux_rafp_patronal * assiette})
+    return cotisations
+    
+def pc(traitement_brut):
+    cotisations = []
+    cotisations.append({'type': TYPE_COTISATION_SOCIALE,
+                        'libelle': TAG_PC,
+                        'salarial': regles.taux_pc_salarial * traitement_brut,
+                        'patronal': regles.taux_pc_patronal * traitement_brut})
     return cotisations
 
 def transfert_primes_points(montant):

@@ -3,6 +3,7 @@ from . import regles
 
 TAG_TRAITEMENT_BRUT = 'traitement brut'
 TAG_INDEMNITE_RESIDENCE = 'indemnité de résidence'
+TAG_REMBOURSEMENT_TRANSPORT = 'remboursement transport domicile-travail'
 TAG_INDEMNITE_DIFFICULTES_ADMINISTRATIVES = 'indemnité pour difficultés administratives'
 TAG_INDEMNITE_COMPENSATION_HAUSSE_CSG = 'indemnité de compensation de la hausse CSG'
 TAG_REMBOURSEMENT_FORFAITAIRE_PSC = 'remboursement forfaitaire de la protection sociale complémentaire'
@@ -49,4 +50,7 @@ def remboursement_psc():
             'montant': regles.remboursement_forfaitaire_psc,
             'categorie': regles.CATEGORIE_REVENU_PSC}
 
-
+def remboursement_transport(montant):
+    return {'libelle': TAG_REMBOURSEMENT_TRANSPORT,
+            'montant': montant,
+            'categorie': regles.CATEGORIE_REVENU_TRANSPORT}

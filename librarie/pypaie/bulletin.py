@@ -57,6 +57,8 @@ class Bulletin:
             cotis = cotisations.vieillesse_prive(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PRIVE))
         elif cotisation == cotisations.CRNACL:
             cotis = cotisations.crnacl(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC))
+        elif cotisation == cotisations.PC:
+            cotis = cotisations.pc(self.assiette.montant(regles.ASSIETTE_COTISATIONS_PUBLIC))
         elif cotisation == cotisations.RAFP:
             traitement = self.assiette.traitement_brut
             cotis = cotisations.rafp(traitement, self.assiette.montant(regles.ASSIETTE_TOUT) - traitement)
