@@ -9,6 +9,7 @@ revenus_geres = [revenus.TraitementBrut,
                  revenus.IndemniteDifficultesAdministratives,
                  revenus.IndemniteCompensationHausseCSG,
                  revenus.RemboursementPSC]
+cotisations_gerees = [cotisations.CSG_CRDS]
 
 class Bulletin:
     def __init__(self):
@@ -19,6 +20,12 @@ class Bulletin:
             if isinstance(revenu, class_revenu):
                 return True
         raise ValueError(f'Bug : Bulletin : Revenu "{revenu.label}" non géré.')
+
+    def _verifie_cotisation(self, cotisation):
+        for class_cotisation in cotisations_gerees:
+            if isinstance(cotisation, class_cotisation):
+                return True
+        raise ValueError(f'Bug : Bulletin : Cotisation "{cotisation.label}" non gérée.')
 
     def clear(self):
         self.revenus     = []
@@ -36,6 +43,11 @@ class Bulletin:
     def __iadd__(self, revenu):
         self._verifie_revenu(revenu)
         self.revenus.append(revenu)
+        return self
+    
+    def __isub__(self, cotisation):
+        self._verifie_cotisation(cotisation)
+        self.cotisations.append(cotisation)
         return self
 
     def to_excel(self, file_name):
