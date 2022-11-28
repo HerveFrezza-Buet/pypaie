@@ -76,6 +76,21 @@ class Retraite(Cotisation):
     def __init__(self, label):
         super().__init__(label)
 
+class Prefon(Retraite):
+    def __init__(self, montant):
+        super().__init__('Préfon-Retraite')
+        self.montant = montant
+        
+    def _cotisation_salariale(self):
+        return self.montant
+        
+    def cotise(self, assiettes, mode):
+        pass
+        
+    def lignes(self):
+        return [{'label': self.label,
+                 'salarial': self.montant}]
+
 class ATI(Retraite):
     def __init__(self):
         super().__init__('Contribution ATI')

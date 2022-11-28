@@ -7,6 +7,7 @@ import xlsxwriter
 
 revenus_geres = [revenus.TraitementBrut,
                  revenus.IndemniteResidence,
+                 revenus.SupplementFamilial,
                  revenus.IndemniteDifficultesAdministratives,
                  revenus.IndemniteCompensationHausseCSG,
                  revenus.RemboursementPSC,
@@ -28,7 +29,8 @@ cotisations_gerees = [cotisations.CSG_CRDS,
                       cotisations.ATI,
                       cotisations.RAFP,
                       cotisations.CNRACL,
-                      cotisations.PensionCivile]
+                      cotisations.PensionCivile,
+                      cotisations.Prefon]
 
 class Bulletin:
     def __init__(self):
@@ -88,13 +90,13 @@ class Bulletin:
         Euro_fmt  = workbook.add_format({'bold' : True, 'num_format' : '0.00', 'align' : 'right'})
         worksheet = workbook.add_worksheet('Fiche de paie')
 
-        col_label   = 1
+        col_label   = 0
         col_revenu  = col_label+1
         col_cot_sal = col_revenu+1
         col_cot_pat = col_cot_sal+1
 
         # Header
-        l = 1
+        l = 0
         worksheet.write(l, col_revenu, 'Revenu', title_fmt)
         worksheet.write(l, col_cot_sal, 'Part salariale', title_fmt)
         worksheet.write(l, col_cot_pat, 'Part employeur', title_fmt)

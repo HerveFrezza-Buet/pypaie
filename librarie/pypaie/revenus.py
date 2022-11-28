@@ -23,6 +23,16 @@ class TraitementIndiciaireBrut(TraitementBrut):
         super().__init__(indice * regles.valeur_point_indice)
         self.indice = indice
 
+class SupplementFamilial(Revenu):
+    def __init__(self, montant):
+        super().__init__('Supplément familial de traitement', montant)
+
+    def cotise(self, assiettes, mode):
+        assiettes.cotisation_indemnites(self._brut(), mode)
+        
+    def _brut(self):
+        return self.montant
+
 class RemboursementTransport(Revenu):
     def __init__(self, montant):
         self.montant = montant

@@ -1,14 +1,33 @@
 import pypaie as pp
 
-indice = 361
 
 bulletin_paie  = pp.bulletin.Bulletin()
-tb = pp.revenus.TraitementIndiciaireBrut(indice)
-bulletin_paie += tb
-bulletin_paie += pp.revenus.IndemniteResidence(3.00, tb)
-bulletin_paie += pp.revenus.RemboursementTransport(34.46)
-bulletin_paie += pp.revenus.IndemniteFonctions(266.67)
-bulletin_paie += pp.revenus.TransfertPrimesPoints(23.17)
+
+cas = 2
+
+if cas == 1:
+    indice = 361
+    tb = pp.revenus.TraitementIndiciaireBrut(indice)
+    bulletin_paie += tb
+    bulletin_paie += pp.revenus.IndemniteResidence(3.00, tb)
+    bulletin_paie += pp.revenus.RemboursementTransport(34.46)
+    bulletin_paie += pp.revenus.IndemniteFonctions(266.67)
+    bulletin_paie += pp.revenus.TransfertPrimesPoints(23.17)
+
+if cas == 2:
+    indice = 694
+    tb = pp.revenus.TraitementIndiciaireBrut(indice)
+    bulletin_paie += tb
+    bulletin_paie += pp.revenus.IndemniteResidence(3.00, tb)
+    bulletin_paie += pp.revenus.SupplementFamilial(2.29)
+    bulletin_paie += pp.revenus.IndemniteFonctions(419.17)
+    bulletin_paie += pp.revenus.IndemniteCompensationHausseCSG(34.32)
+    bulletin_paie += pp.revenus.RemboursementPSC()
+    bulletin_paie += pp.revenus.TransfertPrimesPoints(32.42)
+    
+    bulletin_paie -= pp.cotisations.Prefon(38.00)
+
+    
 
 bulletin_paie -= pp.cotisations.CSG_CRDS()
 bulletin_paie -= pp.cotisations.Maladie()
