@@ -23,10 +23,22 @@ class TraitementIndiciaireBrut(TraitementBrut):
         super().__init__(indice * regles.valeur_point_indice)
         self.indice = indice
 
+class RemboursementTransport(Revenu):
+    def __init__(self, montant):
+        self.montant = montant
+        super().__init__(f'Remboursement Domicile-Travail', self.montant)
+        
+    def cotise(self, assiettes, mode):
+        assiettes.cotisation_remboursement_transport(self._brut())
+        
+    def _brut(self):
+        return self.montant
+
+        
 class IndemniteResidence(Revenu):
     def __init__(self, taux, traitement_brut):
         self.taux = taux * .01
-        super().__init__('Indemnité de résidence', traitement_brut._brut() * self.taux)
+        super().__init__(f'Indemnité de résidence (taux={taux}%)', traitement_brut._brut() * self.taux)
         
     def cotise(self, assiettes, mode):
         assiettes.cotisation_indemnites(self._brut(), mode)

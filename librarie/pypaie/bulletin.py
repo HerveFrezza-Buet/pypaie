@@ -10,6 +10,7 @@ revenus_geres = [revenus.TraitementBrut,
                  revenus.IndemniteDifficultesAdministratives,
                  revenus.IndemniteCompensationHausseCSG,
                  revenus.RemboursementPSC,
+                 revenus.RemboursementTransport,
                  revenus.PrimePublic,
                  revenus.TransfertPrimesPoints]
 

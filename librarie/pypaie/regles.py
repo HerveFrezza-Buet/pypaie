@@ -179,7 +179,9 @@ class Assiettes:
         self.securite_sociale += montant
         self.csg              += montant
         self.tout             += montant
-        
+
+    def cotisation_remboursement_transport(self, montant):
+        self.tout             += montant
         
     def cotisation_indemnites(self, montant, mode):
         if mode != MODE_PUBLIC:
