@@ -9,8 +9,14 @@ revenus_geres = [revenus.TraitementBrut,
                  revenus.IndemniteResidence,
                  revenus.IndemniteDifficultesAdministratives,
                  revenus.IndemniteCompensationHausseCSG,
-                 revenus.RemboursementPSC]
-cotisations_gerees = [cotisations.CSG_CRDS]
+                 revenus.RemboursementPSC,
+                 revenus.PrimePublic,
+                 revenus.TransfertPrimesPoints]
+cotisations_gerees = [cotisations.CSG_CRDS,
+                      cotisations.Maladie,
+                      cotisations.Chomage,
+                      cotisations.Vieillesse,
+                      cotisations.IRCANTEC]
 
 class Bulletin:
     def __init__(self):
