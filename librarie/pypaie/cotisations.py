@@ -153,3 +153,40 @@ class FNAL(Cotisation):
         return [{'label': self.label,
                 'employeur': self.cotis}]
 
+class PatronaleTauxSecuriteSociale(Cotisation):
+    def __init__(self, label, taux):
+        super().__init__(label)
+        self.taux = taux
+        
+    def cotise(self, assiettes, mode):
+        self.cotis = assiettes.securite_sociale * self.taux * .01
+        
+    def _cotisation_employeur(self):
+        return self.cotis
+
+    def lignes(self):
+        return [{'label': self.label + f' (taux={self.taux}%)',
+                'employeur': self.cotis}]
+
+class AccidentsTravail(PatronaleTauxSecuriteSociale):
+    def __init__(self, taux):
+        super().__init__("Accidents du travail", taux)
+
+class Mobilite(PatronaleTauxSecuriteSociale):
+    def __init__(self, taux):
+        super().__init__("Versement mobilité", taux)
+        
+class CNSA(Cotisation):
+    def __init__(self):
+        super().__init__("Caisse Nationale de Solidarité pour l'Autonomie")
+        
+    def cotise(self, assiettes, mode):
+        self.cotis = assiettes.securite_sociale * regles.taux_cnsa_patronal
+        
+    def _cotisation_employeur(self):
+        return self.cotis
+
+    def lignes(self):
+        return [{'label': self.label,
+                'employeur': self.cotis}]
+

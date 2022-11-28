@@ -17,6 +17,9 @@ bulletin_paie -= pp.cotisations.AllocationsFamiliales(taux_reduit = False)
 bulletin_paie -= pp.cotisations.Vieillesse()
 bulletin_paie -= pp.cotisations.IRCANTEC()
 bulletin_paie -= pp.cotisations.FNAL(nb_salaries = 1000)
+bulletin_paie -= pp.cotisations.AccidentsTravail(taux=1.07)
+bulletin_paie -= pp.cotisations.Mobilite(taux=2.00)
+bulletin_paie -= pp.cotisations.CNSA()
 
 bulletin_paie(pp.regles.MODE_PRIVE) # On fait les calculs
 

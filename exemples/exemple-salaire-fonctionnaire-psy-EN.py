@@ -16,6 +16,7 @@ bulletin_paie -= pp.cotisations.CSG_CRDS()
 bulletin_paie -= pp.cotisations.Maladie()
 bulletin_paie -= pp.cotisations.AllocationsFamiliales()
 bulletin_paie -= pp.cotisations.FNAL()
+bulletin_paie -= pp.cotisations.CNSA()
 
 
 bulletin_paie(pp.regles.MODE_PUBLIC) # On fait les calculs

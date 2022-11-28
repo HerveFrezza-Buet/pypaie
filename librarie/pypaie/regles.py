@@ -143,6 +143,9 @@ def calcul_cotis_fnal(assiette, nb_salaries):
         return 0.001 * min(assiette, plafond_securite_sociale)
     return 0.005 * assiette
 
+# calcul CNSA (solidarité autonomie)
+taux_cnsa_patronal = 0.003
+
 # Assiettes
 
 class Assiettes:
