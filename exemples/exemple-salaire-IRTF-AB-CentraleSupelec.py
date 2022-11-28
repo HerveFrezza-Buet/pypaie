@@ -6,7 +6,7 @@ bulletin_paie  = pp.bulletin.Bulletin()
 cas = 2
 
 if cas == 1:
-    indice = 361
+    indice = 350
     tb = pp.revenus.TraitementIndiciaireBrut(indice)
     bulletin_paie += tb
     bulletin_paie += pp.revenus.IndemniteResidence(3.00, tb)
@@ -15,7 +15,7 @@ if cas == 1:
     bulletin_paie += pp.revenus.TransfertPrimesPoints(23.17)
 
 if cas == 2:
-    indice = 694
+    indice = 700
     tb = pp.revenus.TraitementIndiciaireBrut(indice)
     bulletin_paie += tb
     bulletin_paie += pp.revenus.IndemniteResidence(3.00, tb)

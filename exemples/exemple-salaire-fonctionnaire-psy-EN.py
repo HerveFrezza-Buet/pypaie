@@ -1,6 +1,6 @@
 import pypaie as pp
 
-indice = 715
+indice = 700
 
 bulletin_paie  = pp.bulletin.Bulletin()
 tb = pp.revenus.TraitementIndiciaireBrut(indice)
