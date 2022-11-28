@@ -109,7 +109,47 @@ class IRCANTEC(RetraiteTranches):
     
     def cotise(self, assiettes, mode):
         self.cotis_sal_A, self.cotis_pat_A, self.cotis_sal_B, self.cotis_pat_B = regles.calcul_cotis_ircantec(assiettes.securite_sociale)
-        
-    
 
+class AGIRC_ARRCO(RetraiteTranches):
+    def __init__(self):
+        super().__init__('AGIRC-ARRCO', 'tranche 1', 'tranche 2')
+    
+    def cotise(self, assiettes, mode):
+        self.cotis_sal_A, self.cotis_pat_A, self.cotis_sal_B, self.cotis_pat_B = regles.calcul_cotis_agirc_arrco(assiettes.securite_sociale)
+        
+
+class AllocationsFamiliales(Cotisation):
+    def __init__(self, taux_reduit = False):
+        super().__init__('Allocations familiales')
+        self.taux_reduit = taux_reduit
+        
+    def cotise(self, assiettes, mode):
+        self.taux_reduit_effectif, self.cotis = regles.calcul_cotis_allocations_familiales(assiettes.securite_sociale, self.taux_reduit)
+        
+    def _cotisation_employeur(self):
+        return self.cotis
+
+    def lignes(self):
+        if self.taux_reduit_effectif:
+            label_taux = '(taux réduit)'
+        else:
+            label_taux = '(taux plein)'
+        return [{'label': f'{self.label} {label_taux}',
+                'employeur': self.cotis}]
+
+    
+class FNAL(Cotisation):
+    def __init__(self, nb_salaries=regles.seuil_nb_salaries_fnal):
+        super().__init__("Fond National d'Aide au Logement")
+        self.nb_salaries = nb_salaries
+        
+    def cotise(self, assiettes, mode):
+        self.cotis = regles.calcul_cotis_fnal(assiettes.securite_sociale, self.nb_salaries)
+        
+    def _cotisation_employeur(self):
+        return self.cotis
+
+    def lignes(self):
+        return [{'label': self.label,
+                'employeur': self.cotis}]
 

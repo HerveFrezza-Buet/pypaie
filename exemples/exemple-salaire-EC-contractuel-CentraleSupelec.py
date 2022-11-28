@@ -12,9 +12,11 @@ bulletin_paie += pp.revenus.RemboursementPSC()
 
 bulletin_paie -= pp.cotisations.CSG_CRDS()
 bulletin_paie -= pp.cotisations.Maladie(pp.regles.REGIME_LOCAL)
+bulletin_paie -= pp.cotisations.AllocationsFamiliales(taux_reduit = False)
 #bulletin_paie -= pp.cotisations.Chomage()
 bulletin_paie -= pp.cotisations.Vieillesse()
 bulletin_paie -= pp.cotisations.IRCANTEC()
+bulletin_paie -= pp.cotisations.FNAL(nb_salaries = 1000)
 
 bulletin_paie(pp.regles.MODE_PRIVE) # On fait les calculs
 

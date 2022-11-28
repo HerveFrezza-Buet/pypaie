@@ -14,8 +14,11 @@ revenus_geres = [revenus.TraitementBrut,
                  revenus.TransfertPrimesPoints]
 cotisations_gerees = [cotisations.CSG_CRDS,
                       cotisations.Maladie,
+                      cotisations.AllocationsFamiliales,
+                      cotisations.FNAL,
                       cotisations.Chomage,
                       cotisations.Vieillesse,
+                      cotisations.AGIRC_ARRCO,
                       cotisations.IRCANTEC]
 
 class Bulletin:

@@ -163,7 +163,7 @@ taux_accident_travail_patronal        = .0525
 # calcul FNAL
 seuil_nb_salaries_fnal = 50
 def calcul_cotis_fnal(brut_salarial, nb_salaries):
-    if nb_salaries < 50:
+    if nb_salaries < seuil_nb_salaries_fnal:
         return 0.001 * min(brut_salarial, plafond_securite_sociale)
     return 0.005 * brut_salarial
 

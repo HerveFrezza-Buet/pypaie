@@ -109,6 +109,40 @@ def calcul_cotis_ircantec(assiette):
            B  * taux_ircantec_salarial_tranche_b, \
            B  * taux_ircantec_patronal_tranche_b 
 
+# calcul retraite privée complementaire AGIRC-ARRCO
+
+taux_agirc_arrco_tranche_1 = 0.0787
+taux_agirc_arrco_tranche_2 = 0.2159
+part_salariale_agirc_arrco = 0.4
+part_patronale_agirc_arrco = 1 - part_salariale_agirc_arrco
+
+def calcul_tranches_agirc_arrco(assiette):
+    return calcul_tranches_vieillesse(assiette)
+
+def calcul_cotis_agirc_arrco(assiette):
+    A, B = calcul_tranches_agirc_arrco(assiette)
+    return A  * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_1, \
+           A  * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_1, \
+           B  * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_2, \
+           B  * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_2
+
+# calcul allocations familiales
+taux_allocations_familiales_patronal        = .0525
+taux_allocations_familiales_patronal_reduit = taux_allocations_familiales_patronal - 0.018
+
+def calcul_cotis_allocations_familiales(assiette, employeur_beneficie_taux_reduit):
+    if employeur_beneficie_taux_reduit and (assiette < 2.5 * smic_mensuel_brut):
+        return True, taux_allocations_familiales_patronal_reduit * assiette
+    else:
+        return False, taux_allocations_familiales_patronal * assiette
+
+# calcul FNAL
+seuil_nb_salaries_fnal = 50
+def calcul_cotis_fnal(assiette, nb_salaries):
+    if nb_salaries < seuil_nb_salaries_fnal:
+        return 0.001 * min(assiette, plafond_securite_sociale)
+    return 0.005 * assiette
+
 # Assiettes
 
 class Assiettes:
