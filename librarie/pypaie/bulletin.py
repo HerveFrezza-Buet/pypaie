@@ -41,10 +41,20 @@ class Bulletin:
 
     def __call__(self, mode):
         self.assiettes = regles.Assiettes()
-        for r in self.revenus:
-            r.cotise(self.assiettes, mode)
-        for c in self.cotisations:
-            c.cotise(self.assiettes, mode)
+        self.total_revenu    = 0.0
+        self.total_salarial  = 0.0
+        self.total_employeur = 0.0
+        for elem in self.revenus + self.cotisations:
+            elem.cotise(self.assiettes, mode)
+            c = elem._brut()
+            if c is not None:
+                self.total_revenu    += c
+            c = elem._cotisation_salariale()
+            if c is not None:
+                self.total_salarial  += c
+            c = elem._cotisation_employeur()
+            if c is not None:
+                self.total_employeur += c
         
         
     def __iadd__(self, revenu):
@@ -93,6 +103,16 @@ class Bulletin:
                 worksheet.write(ll + l, col_cot_sal, elem['salarial'], euro_fmt)
             if 'employeur' in elem:
                 worksheet.write(ll + l, col_cot_pat, elem['employeur'], euro_fmt)
+                
+        l += ll + 2
+        worksheet.write(l, col_label,   'Total',                                  Label_fmt)
+        worksheet.write(l, col_revenu,  self.total_revenu + self.total_employeur, Euro_fmt)
+        worksheet.write(l, col_cot_sal, self.total_salarial,                      Euro_fmt)
+        worksheet.write(l, col_cot_pat, self.total_employeur,                     Euro_fmt)
+        l += 1
+        worksheet.write(l, col_label,   'Net',                                    Label_fmt)
+        worksheet.write(l, col_revenu,  self.total_revenu - self.total_salarial,  Euro_fmt)
+        
                 
 
         
