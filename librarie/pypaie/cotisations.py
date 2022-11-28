@@ -76,6 +76,79 @@ class Retraite(Cotisation):
     def __init__(self, label):
         super().__init__(label)
 
+class ATI(Retraite):
+    def __init__(self):
+        super().__init__('Contribution ATI')
+        
+    def _cotisation_employeur(self):
+        return self.cotis
+        
+    def cotise(self, assiettes, mode):
+        self.cotis = regles.taux_ati_patronal * assiettes.securite_sociale
+        
+    def lignes(self):
+        return [{'label': self.label,
+                'employeur': self.cotis}]
+
+class CNRACL(Retraite):
+    def __init__(self):
+        super().__init__('CRNACL')
+        
+    def _cotisation_salariale(self):
+        return self.cotis_s
+        
+    def _cotisation_employeur(self):
+        return self.cotis_e
+        
+    def cotise(self, assiettes, mode):
+        self.cotis_s = regles.taux_cnracl_salarial * assiettes.securite_sociale
+        self.cotis_e = regles.taux_cnracl_patronal * assiettes.securite_sociale
+        
+    def lignes(self):
+        return [{'label': self.label,
+                 'salarial': self.cotis_s,
+                 'employeur': self.cotis_e}]
+    
+class RAFP(Retraite):
+    def __init__(self):
+        super().__init__('RAFP')
+        
+    def _cotisation_salariale(self):
+        return self.cotis_s
+        
+    def _cotisation_employeur(self):
+        return self.cotis_e
+        
+    def cotise(self, assiettes, mode):
+        self.cotis_s = regles.taux_rafp_salarial * assiettes.rafp
+        self.cotis_e = regles.taux_rafp_patronal * assiettes.rafp
+        
+    def lignes(self):
+        return [{'label': self.label,
+                 'salarial': self.cotis_s,
+                 'employeur': self.cotis_e}]
+
+class PensionCivile(Retraite):
+    def __init__(self):
+        super().__init__('Pension civile (PC)')
+        
+    def _cotisation_salariale(self):
+        return self.cotis_s
+        
+    def _cotisation_employeur(self):
+        return self.cotis_e
+        
+    def cotise(self, assiettes, mode):
+        self.cotis_s = regles.taux_pc_salarial * assiettes.securite_sociale
+        self.cotis_e = regles.taux_pc_patronal * assiettes.securite_sociale
+        
+    def lignes(self):
+        return [{'label': self.label,
+                 'salarial': self.cotis_s,
+                 'employeur': self.cotis_e}]
+
+
+
 class RetraiteTranches(Retraite):
     def __init__(self, label, tag_A, tag_B):
         super().__init__(label)

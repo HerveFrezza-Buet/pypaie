@@ -12,6 +12,7 @@ revenus_geres = [revenus.TraitementBrut,
                  revenus.RemboursementPSC,
                  revenus.PrimePublic,
                  revenus.TransfertPrimesPoints]
+
 cotisations_gerees = [cotisations.CSG_CRDS,
                       cotisations.Maladie,
                       cotisations.AllocationsFamiliales,
@@ -22,7 +23,11 @@ cotisations_gerees = [cotisations.CSG_CRDS,
                       cotisations.Chomage,
                       cotisations.Vieillesse,
                       cotisations.AGIRC_ARRCO,
-                      cotisations.IRCANTEC]
+                      cotisations.IRCANTEC,
+                      cotisations.ATI,
+                      cotisations.RAFP,
+                      cotisations.CNRACL,
+                      cotisations.PensionCivile]
 
 class Bulletin:
     def __init__(self):

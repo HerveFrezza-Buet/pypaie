@@ -146,13 +146,34 @@ def calcul_cotis_fnal(assiette, nb_salaries):
 # calcul CNSA (solidarité autonomie)
 taux_cnsa_patronal = 0.003
 
+# Calcul contribution ATI
+taux_ati_patronal = 0.0032
+
+# calcul retraite publique CNRACL
+taux_cnracl_salarial = 0.111
+taux_cnracl_patronal = 0.3065
+
+# calcul retraite publique pension civile (PC)
+taux_pc_salarial = 0.111
+taux_pc_patronal = 0.7428
+
+# calcul retraite complémentaire RAFP
+taux_rafp_seuil = .2
+taux_rafp_salarial = .05
+taux_rafp_patronal = .05
+
 # Assiettes
 
 class Assiettes:
     def __init__(self):
         self.securite_sociale = 0.0
         self.csg              = 0.0
+        self._rafp            = 0.0
         self.tout             = 0.0
+
+    @property
+    def rafp(self):
+        return min(self._rafp, taux_rafp_seuil * self.securite_sociale)
         
     def cotisation_traitement_brut(self, montant):
         self.securite_sociale += montant
@@ -163,6 +184,8 @@ class Assiettes:
     def cotisation_indemnites(self, montant, mode):
         if mode != MODE_PUBLIC:
             self.securite_sociale += montant
+        else:
+            self._rafp += montant
         self.csg              += montant
         self.tout             += montant
         
@@ -173,8 +196,11 @@ class Assiettes:
     def cotisation_prime(self, montant, mode):
         if mode != MODE_PUBLIC:
             self.securite_sociale += montant
+        else:
+            self._rafp += montant
         self.csg              += montant
         self.tout             += montant
         
     def cotisation_transfert_primes_points(self, montant):
-        self.csg -= montant
+        self.csg   -= montant
+        self._rafp -= montant
