@@ -8,15 +8,20 @@ class Revenu(ligne.Ligne):
         self.montant = montant
 
 
-class TraitementBrut(Revenu):
-    def __init__(self, montant):
-        super().__init__('Traitement brut', montant)
+class Traitement(Revenu):
+    def __init__(self, label, montant):
+        super().__init__(label, montant)
 
     def cotise(self, assiettes, mode):
         assiettes.cotisation_traitement_brut(self._brut())
         
     def _brut(self):
         return self.montant
+    
+class TraitementBrut(Traitement):
+    def __init__(self, montant):
+        super().__init__('Traitement brut', montant)
+
     
 class TraitementIndiciaireBrut(TraitementBrut):
     def __init__(self, indice):
@@ -101,6 +106,10 @@ class Prime(Revenu):
 class PrimePublic(Prime):
     def __init__(self, label, montant):
         super().__init__(label, montant, regles.MODE_PUBLIC)
+    
+class PrimePrive(Prime):
+    def __init__(self, label, montant):
+        super().__init__(label, montant, regles.MODE_PRIVE)
         
 class IndemniteFonctions(PrimePublic):
     def __init__(self, montant):

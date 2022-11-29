@@ -1,6 +1,7 @@
 from . import regles
 from . import revenus
 from . import cotisations
+from . import evenements
 from . import ligne
 
 import xlsxwriter
@@ -32,6 +33,8 @@ cotisations_gerees = [cotisations.CSG_CRDS,
                       cotisations.PensionCivile,
                       cotisations.Prefon]
 
+evenements_geres = [evenements.RegularisationAccompte]
+
 class Bulletin:
     def __init__(self):
         self.clear()
@@ -48,17 +51,21 @@ class Bulletin:
                 return True
         raise ValueError(f'Bug : Bulletin : Cotisation "{cotisation.label}" non gérée.')
 
+    def _verifie_evenement(self, evenement):
+        for class_evenement in evenements_geres:
+            if isinstance(evenement, class_evenement):
+                return True
+        raise ValueError(f'Bug : Bulletin : Evenement "{evenement.label}" non gérée.')
+
     def clear(self):
-        self.revenus     = []
-        self.cotisations = []
-        self.assiettes   = regles.Assiettes()
+        self.elements = []
 
     def __call__(self, mode):
         self.assiettes = regles.Assiettes()
         self.total_revenu    = 0.0
         self.total_salarial  = 0.0
         self.total_employeur = 0.0
-        for elem in self.revenus + self.cotisations:
+        for elem in self.elements:
             elem.cotise(self.assiettes, mode)
             c = elem._brut()
             if c is not None:
@@ -73,13 +80,17 @@ class Bulletin:
         
     def __iadd__(self, revenu):
         self._verifie_revenu(revenu)
-        self.revenus.append(revenu)
+        self.elements.append(revenu)
         return self
     
     def __isub__(self, cotisation):
         self._verifie_cotisation(cotisation)
-        self.cotisations.append(cotisation)
+        self.elements.append(cotisation)
         return self
+    
+    def __ne__(self, evenement):
+        self._verifie_evenement(evenement)
+        self.elements.append(evenement)
 
     def to_excel(self, file_name):
         workbook  = xlsxwriter.Workbook(file_name)
@@ -103,9 +114,7 @@ class Bulletin:
         l += 1
 
         content  = []
-        for elem in self.revenus:
-            content += elem.lignes()
-        for elem in self.cotisations:
+        for elem in self.elements:
             content += elem.lignes()
 
         for ll, elem in enumerate(content):

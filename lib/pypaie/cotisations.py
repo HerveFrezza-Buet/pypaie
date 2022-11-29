@@ -177,12 +177,16 @@ class RetraiteTranches(Retraite):
         return self.cotis_pat_A + self.cotis_pat_B
         
     def lignes(self):
-        return [{'label': f'{self.label} {self.tag_A}',
-                 'salarial': self.cotis_sal_A,
-                 'employeur': self.cotis_pat_A},
-                {'label': f'{self.label} {self.tag_B}',
-                 'salarial': self.cotis_sal_B,
-                 'employeur': self.cotis_pat_B}]
+        res = []
+        if self.cotis_sal_A > 0 or self.cotis_pat_A > 0:
+            res.append({'label': f'{self.label} {self.tag_A}',
+                        'salarial': self.cotis_sal_A,
+                        'employeur': self.cotis_pat_A})
+        if self.cotis_sal_B > 0 or self.cotis_pat_B > 0:
+            res.append({'label': f'{self.label} {self.tag_B}',
+                        'salarial': self.cotis_sal_B,
+                        'employeur': self.cotis_pat_B})
+        return res
 
 class Vieillesse(RetraiteTranches):
     def __init__(self):
