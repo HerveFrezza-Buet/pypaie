@@ -14,6 +14,7 @@ revenus_geres = [revenus.TraitementBrut,
                  revenus.RemboursementPSC,
                  revenus.RemboursementTransport,
                  revenus.PrimePublic,
+                 revenus.PrimePrive,
                  revenus.TransfertPrimesPoints]
 
 cotisations_gerees = [cotisations.CSG_CRDS,
