@@ -33,7 +33,7 @@ class SupplementFamilial(Revenu):
         super().__init__('Supplément familial de traitement', montant)
 
     def cotise(self, assiettes, mode):
-        assiettes.cotisation_indemnites(self._brut(), mode)
+        assiettes.cotisation_familial(self._brut(), mode)
         
     def _brut(self):
         return self.montant

@@ -168,8 +168,12 @@ class Assiettes:
     def __init__(self):
         self.securite_sociale = 0.0
         self.csg              = 0.0
+        self.ircantec         = 0.0
         self._rafp            = 0.0
         self.tout             = 0.0
+
+    def __str__(self):
+        return f'[secu={self.securite_sociale}, csg={self.csg}, rafp={self.rafp}]={self.tout}'
 
     @property
     def rafp(self):
@@ -182,14 +186,20 @@ class Assiettes:
 
     def cotisation_remboursement_transport(self, montant):
         self.tout             += montant
-        
-    def cotisation_indemnites(self, montant, mode):
+
+    
+    def cotisation_familial(self, montant, mode):
         if mode != MODE_PUBLIC:
             self.securite_sociale += montant
         else:
             self._rafp += montant
+        self.ircantec         += montant
         self.csg              += montant
         self.tout             += montant
+        
+    def cotisation_indemnites(self, montant, mode):
+        self.cotisation_familial(montant, mode)
+        self.ircantec         += montant
         
     def cotisation_psc(self, montant):
         self.csg  += montant
