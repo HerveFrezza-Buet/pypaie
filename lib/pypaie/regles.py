@@ -30,14 +30,27 @@ remboursement_forfaitaire_psc = 15.00
 taux_csg_abattement      = 0.9825
 taux_csg_imp_salarial    = 0.024
 taux_csg_nonimp_salarial = 0.068
+taux_csg_total_salarial  = taux_csg_imp_salarial + taux_csg_nonimp_salarial
 taux_crds_salarial       = 0.005
 
-def calcul_assiette_csg_crds(assiette):
+def calcul_assiette_csg_crds(assiette, assiette_hs):
+    # calcul hors HS.
     tranche_1 = min(assiette, 4*plafond_securite_sociale)
     tranche_2 = 0 # comme ça ça fait vraiment 0, pas de soucis d'arrondis.
     if assiette > 4*plafond_securite_sociale:
         tranche_2 = assiette - tranche_1
-    return tranche_1 * taux_csg_abattement + tranche_2
+    base =  tranche_1 * taux_csg_abattement + tranche_2
+    # calcul HS
+    if tranche_2 > 0 :
+        base_hs = assiette_hs
+    else:
+        a = assiette + assiette_hs
+        tranche_1 = min(a, 4*plafond_securite_sociale)
+        tranche_2 = 0
+        if a > 4*plafond_securite_sociale:
+            tranche_2 = a - tranche_1
+        base_hs = (tranche_1-assiette) * taux_csg_abattement + tranche_2
+    return base, base_hs
 
 
 # calcul maladie
@@ -166,21 +179,31 @@ taux_rafp_patronal = .05
 
 class Assiettes:
     def __init__(self):
-        self.securite_sociale = 0.0
-        self.csg              = 0.0
-        self.ircantec         = 0.0
-        self._rafp            = 0.0
-        self.tout             = 0.0
+        self.securite_sociale    = 0.0 
+        self.securite_sociale_hs = 0.0
+        self.csg                 = 0.0 
+        self.csg_hs              = 0.0 
+        self.ircantec            = 0.0
+        self.ircantec_hs         = 0.0
+        self._rafp               = 0.0
+        self.tout                = 0.0
 
     def __str__(self):
-        return f'[secu={self.securite_sociale}, csg={self.csg}, rafp={self.rafp}]={self.tout}'
+        return f'[secu={self.securite_sociale}, secu_hs={self.securite_sociale_hs}, csg={self.csg}, csg_hs={self.csg_hs}, ircantec={self.ircantec}, ircantec_hs={self.ircantec_hs}, rafp={self.rafp}]={self.tout}'
 
     @property
     def rafp(self):
         return min(self._rafp, taux_rafp_seuil * self.securite_sociale)
         
+    def cotisation_heures_sup_brut(self, montant):
+        self.securite_sociale_hs += montant
+        self.ircantec_hs         += montant
+        self.csg_hs              += montant
+        self.tout                += montant
+        
     def cotisation_traitement_brut(self, montant):
         self.securite_sociale += montant
+        self.ircantec         += montant
         self.csg              += montant
         self.tout             += montant
 
@@ -193,7 +216,6 @@ class Assiettes:
             self.securite_sociale += montant
         else:
             self._rafp += montant
-        self.ircantec         += montant
         self.csg              += montant
         self.tout             += montant
         
@@ -210,6 +232,7 @@ class Assiettes:
             self.securite_sociale += montant
         else:
             self._rafp += montant
+        self.ircantec         += montant
         self.csg              += montant
         self.tout             += montant
         

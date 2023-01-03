@@ -7,6 +7,15 @@ class Revenu(ligne.Ligne):
         super().__init__(label)
         self.montant = montant
 
+class HeuresSupBrut(Revenu):
+    def __init__(self, montant):
+        super().__init__('Heures Sup.', montant)
+
+    def cotise(self, assiettes, mode):
+        assiettes.cotisation_heures_sup_brut(self._brut())
+        
+    def _brut(self):
+        return self.montant
 
 class Traitement(Revenu):
     def __init__(self, label, montant):

@@ -13,10 +13,11 @@ class CSG_CRDS(Cotisation):
         return self.deductible + self.non_deductible + self.crds
 
     def cotise(self, assiettes, mode):
-        base = regles.calcul_assiette_csg_crds(assiettes.csg)
-        self.non_deductible = regles.taux_csg_imp_salarial    * base
-        self.deductible     = regles.taux_csg_nonimp_salarial * base
-        self.crds           = regles.taux_crds_salarial       * base
+        base, base_hs = regles.calcul_assiette_csg_crds(assiettes.csg, assiettes.csg_hs)
+        self.non_deductible  = regles.taux_csg_imp_salarial    * base
+        self.deductible      = regles.taux_csg_nonimp_salarial * base
+        self.non_deductible += regles.taux_csg_total_salarial  * base_hs
+        self.crds            = regles.taux_crds_salarial       * (base + base_hs)
     
     def lignes(self):
         return [{'label': 'CSG non-déductible',
@@ -32,7 +33,8 @@ class Maladie(Cotisation):
         self.regime = regime
         
     def cotise(self, assiettes, mode):
-        self.cotis_non_majoree, self.cotis_majoree, self.cotis_salariale = regles.calcul_cotis_maladie(assiettes.securite_sociale, mode, self.regime)
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis_non_majoree, self.cotis_majoree, self.cotis_salariale = regles.calcul_cotis_maladie(a, mode, self.regime)
         
     def _cotisation_salariale(self):
         return self.cotis_salariale
@@ -63,8 +65,9 @@ class Chomage(Cotisation):
         return self.cotis_chomage + self.cotis_ags
     
     def cotise(self, assiettes, mode):
-        self.cotis_chomage = regles.taux_chomage_patronal * assiettes.securite_sociale
-        self.cotis_ags     = regles.taux_ags_patronal * assiettes.securite_sociale
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis_chomage = regles.taux_chomage_patronal * a
+        self.cotis_ags     = regles.taux_ags_patronal * a
     
     def lignes(self):
         return [{'label': "Cotisation assurance chômage",
@@ -99,7 +102,8 @@ class ATI(Retraite):
         return self.cotis
         
     def cotise(self, assiettes, mode):
-        self.cotis = regles.taux_ati_patronal * assiettes.securite_sociale
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis = regles.taux_ati_patronal * a
         
     def lignes(self):
         return [{'label': self.label,
@@ -116,8 +120,9 @@ class CNRACL(Retraite):
         return self.cotis_e
         
     def cotise(self, assiettes, mode):
-        self.cotis_s = regles.taux_cnracl_salarial * assiettes.securite_sociale
-        self.cotis_e = regles.taux_cnracl_patronal * assiettes.securite_sociale
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis_s = regles.taux_cnracl_salarial * a
+        self.cotis_e = regles.taux_cnracl_patronal * a
         
     def lignes(self):
         return [{'label': self.label,
@@ -154,8 +159,9 @@ class PensionCivile(Retraite):
         return self.cotis_e
         
     def cotise(self, assiettes, mode):
-        self.cotis_s = regles.taux_pc_salarial * assiettes.securite_sociale
-        self.cotis_e = regles.taux_pc_patronal * assiettes.securite_sociale
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis_s = regles.taux_pc_salarial * a
+        self.cotis_e = regles.taux_pc_patronal * a
         
     def lignes(self):
         return [{'label': self.label,
@@ -171,21 +177,21 @@ class RetraiteTranches(Retraite):
         self.tag_B = tag_B
         
     def _cotisation_salariale(self):
-        return self.cotis_sal_A + self.cotis_sal_B
+        return self.cotis_sal_A + self.cotis_sal_A_hs + self.cotis_sal_B + self.cotis_sal_B_hs
     
     def _cotisation_employeur(self):
-        return self.cotis_pat_A + self.cotis_pat_B
+        return self.cotis_pat_A + self.cotis_pat_A_hs + self.cotis_pat_B + self.cotis_pat_B_hs
         
     def lignes(self):
         res = []
         if self.cotis_sal_A > 0 or self.cotis_pat_A > 0:
             res.append({'label': f'{self.label} {self.tag_A}',
-                        'salarial': self.cotis_sal_A,
-                        'employeur': self.cotis_pat_A})
+                        'salarial': self.cotis_sal_A + self.cotis_sal_A_hs,
+                        'employeur': self.cotis_pat_A + self.cotis_pat_A_hs})
         if self.cotis_sal_B > 0 or self.cotis_pat_B > 0:
             res.append({'label': f'{self.label} {self.tag_B}',
-                        'salarial': self.cotis_sal_B,
-                        'employeur': self.cotis_pat_B})
+                        'salarial': self.cotis_sal_B + self.cotis_sal_B_hs,
+                        'employeur': self.cotis_pat_B + self.cotis_pat_B_hs})
         return res
 
 class Vieillesse(RetraiteTranches):
@@ -193,21 +199,21 @@ class Vieillesse(RetraiteTranches):
         super().__init__('Vieillesse', 'plafonnée', 'déplafonnée')
     
     def cotise(self, assiettes, mode):
-        self.cotis_sal_A, self.cotis_pat_A, self.cotis_sal_B, self.cotis_pat_B = regles.calcul_cotis_vieillesse(assiettes.securite_sociale)
+        self.cotis_sal_A, self.cotis_sal_A_hs, self.cotis_pat_A, self.cotis_pat_A_hs, self.cotis_sal_B, self.cotis_sal_B_hs, self.cotis_pat_B, self.cotis_pat_B_hs = regles.calcul_cotis_vieillesse(assiettes.securite_sociale, assiettes.securite_sociale_hs)
 
 class IRCANTEC(RetraiteTranches):
     def __init__(self):
         super().__init__('IRCANTEC', 'tranche A', 'tranche B')
     
     def cotise(self, assiettes, mode):
-        self.cotis_sal_A, self.cotis_pat_A, self.cotis_sal_B, self.cotis_pat_B = regles.calcul_cotis_ircantec(assiettes.securite_sociale)
+        self.cotis_sal_A, self.cotis_sal_A_hs, self.cotis_pat_A, self.cotis_pat_A_hs, self.cotis_sal_B, self.cotis_sal_B_hs, self.cotis_pat_B, self.cotis_pat_B_hs = regles.calcul_cotis_ircantec(assiettes.ircantec, assiettes.ircantec_hs)
 
 class AGIRC_ARRCO(RetraiteTranches):
     def __init__(self):
         super().__init__('AGIRC-ARRCO', 'tranche 1', 'tranche 2')
     
     def cotise(self, assiettes, mode):
-        self.cotis_sal_A, self.cotis_pat_A, self.cotis_sal_B, self.cotis_pat_B = regles.calcul_cotis_agirc_arrco(assiettes.securite_sociale)
+        self.cotis_sal_A, self.cotis_sal_A_hs, self.cotis_pat_A, self.cotis_pat_A_hs, self.cotis_sal_B, self.cotis_sal_B_hs, self.cotis_pat_B, self.cotis_pat_B_hs = regles.calcul_cotis_agirc_arrco(assiettes.securite_sociale, assiettes.securite_sociale_hs)
         
 
 class AllocationsFamiliales(Cotisation):

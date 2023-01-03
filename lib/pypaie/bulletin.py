@@ -7,6 +7,7 @@ from . import ligne
 import xlsxwriter
 
 revenus_geres = [revenus.TraitementBrut,
+                 revenus.HeuresSupBrut,
                  revenus.IndemniteResidence,
                  revenus.SupplementFamilial,
                  revenus.IndemniteDifficultesAdministratives,

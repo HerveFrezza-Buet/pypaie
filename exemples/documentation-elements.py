@@ -15,6 +15,7 @@ tb = pp.revenus.TraitementBrut(1000)
 
 bulletin_paie += pp.revenus.TraitementBrut(1000)                    # Traitement brut de 1000 euros.
 bulletin_paie += pp.revenus.TraitementIndiciaireBrut(500)           # Traitement brut d'indice 500.     
+bulletin_paie += pp.revenus.HeuresSupBrut(500)                      # Heures sup 500 euros.     
 bulletin_paie += pp.revenus.PrimePublic('nom', 200)                 # Prime d'un fonctionnaire de 200 euros.
 bulletin_paie += pp.revenus.PrimePrive('nom', 200)                  # Prime d'un contractuel / salarié du privé de 200 euros.
 bulletin_paie += pp.revenus.IndemniteFonctions(200)                 # Prime d'un fonctionnaire de 200 euros.
