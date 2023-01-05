@@ -78,6 +78,18 @@ class Bulletin:
             c = elem._cotisation_employeur()
             if c is not None:
                 self.total_employeur += c
+        self._calcule_reduction_heures_sup()
+
+    def _calcule_reduction_heures_sup(self):
+        cotisation_salariale_hs = 0
+        for elem in self.elements:
+            if isinstance(elem, cotisations.ExonerableHeureSup):
+                cotisation_salariale_hs += elem._cotisation_salariale_via_heures_sup()
+        print('TO DO : gérer les seuils ici !!!')
+        self.total_salarial -= cotisation_salariale_hs
+        self.elements.append(cotisations.ReductionHeureSup(cotisation_salariale_hs))
+        
+        
         
         
     def __iadd__(self, revenu):

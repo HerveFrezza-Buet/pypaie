@@ -75,7 +75,14 @@ class Chomage(Cotisation):
                 {'label': "cotisation AGS garantie des salaires",
                  'employeur': self.cotis_ags}]
 
-class Retraite(Cotisation):
+class ExonerableHeureSup(Cotisation):
+    def __init__(self, label):
+        super().__init__(label)
+
+    def _cotisation_salariale_via_heures_sup(self):
+        return 0
+        
+class Retraite(ExonerableHeureSup):
     def __init__(self, label):
         super().__init__(label)
 
@@ -176,6 +183,10 @@ class RetraiteTranches(Retraite):
         self.tag_A = tag_A
         self.tag_B = tag_B
         
+    def _cotisation_salariale_via_heures_sup(self):
+        print(f'{self.label} -> {self.cotis_sal_A_hs + self.cotis_sal_B_hs} = {self.cotis_sal_A_hs} + {self.cotis_sal_B_hs}')
+        return self.cotis_sal_A_hs + self.cotis_sal_B_hs
+    
     def _cotisation_salariale(self):
         return self.cotis_sal_A + self.cotis_sal_A_hs + self.cotis_sal_B + self.cotis_sal_B_hs
     
@@ -292,3 +303,13 @@ class CNSA(Cotisation):
         return [{'label': self.label,
                 'employeur': self.cotis}]
 
+
+class ReductionHeureSup(Cotisation):
+    def __init__(self, montant):
+        super().__init__("Réduction cotisation heures sup.")
+        self.montant = montant
+        
+    def lignes(self):
+        return [{'label': self.label,
+                 'salarial': -self.montant}]
+        
