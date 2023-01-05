@@ -25,6 +25,26 @@ def indemnite_difficultes_administratives(indice):
 # Un remboursement mensuel forfaitaire de la protection sociale complémentaire
 remboursement_forfaitaire_psc = 15.00
 
+# Rapartition par tranches en tenant compte des heures sup.
+def tranches_avec_hs(assiette_non_hs, assiette_hs, seuil_tranche):
+    tranche_1 = min(assiette_non_hs, seuil_tranche)
+    tranche_2 = 0 # comme ça ça fait vraiment 0, pas de soucis d'arrondis.
+    if assiette_non_hs > seuil_tranche:
+        tranche_2 = assiette_non_hs - tranche_1
+
+    if tranche_2 > 0:
+        tranche_1_hs = 0
+        tranche_2_hs = assiette_hs
+    else:
+        a = assiette_non_hs + assiette_hs
+        tranche_1_hs = min(a, seuil_tranche)
+        tranche_2_hs = 0
+        if a > seuil_tranche:
+            tranche_2_hs = a - tranche_1
+        tranche_1_hs -= assiette_non_hs
+    return tranche_1, tranche_2, tranche_1_hs, tranche_2_hs
+        
+    
 
 # calcul CSG-CRDS
 taux_csg_abattement      = 0.9825
@@ -34,22 +54,9 @@ taux_csg_total_salarial  = taux_csg_imp_salarial + taux_csg_nonimp_salarial
 taux_crds_salarial       = 0.005
 
 def calcul_assiette_csg_crds(assiette, assiette_hs):
-    # calcul hors HS.
-    tranche_1 = min(assiette, 4*plafond_securite_sociale)
-    tranche_2 = 0 # comme ça ça fait vraiment 0, pas de soucis d'arrondis.
-    if assiette > 4*plafond_securite_sociale:
-        tranche_2 = assiette - tranche_1
-    base =  tranche_1 * taux_csg_abattement + tranche_2
-    # calcul HS
-    if tranche_2 > 0 :
-        base_hs = assiette_hs
-    else:
-        a = assiette + assiette_hs
-        tranche_1 = min(a, 4*plafond_securite_sociale)
-        tranche_2 = 0
-        if a > 4*plafond_securite_sociale:
-            tranche_2 = a - tranche_1
-        base_hs = (tranche_1-assiette) * taux_csg_abattement + tranche_2
+    tranche_1, tranche_2, tranche_1_hs, tranche_2_hs = tranches_avec_hs(assiette, assiette_hs, 4*plafond_securite_sociale)
+    base = tranche_1 * taux_csg_abattement + tranche_2
+    base_hs = tranche_1_hs * taux_csg_abattement + tranche_2_hs
     return base, base_hs
 
 
@@ -89,20 +96,28 @@ taux_vieillesse_patronal_plafonnee   = 0.0855
 taux_vieillesse_salarial_deplafonnee = 0.004
 taux_vieillesse_patronal_deplafonnee = 0.019
 
-def calcul_tranches_vieillesse(assiette):
-    tranche_1 = min(assiette, plafond_securite_sociale)
-    tranche_2 = 0 # comme ça ça fait vraiment 0, pas de soucis d'arrondis.
-    if assiette > plafond_securite_sociale:
-        tranche_2 = min(assiette, 8*plafond_securite_sociale) - tranche_1
-    return tranche_1, tranche_2
+def calcul_tranches_vieillesse(assiette, assiette_hs):
+    seuil_max = 8*plafond_securite_sociale
+    if assiette > seuil_max:
+        t1, t2, t1hs, t2hs = tranches_avec_hs(seuil_max, 0, plafond_securite_sociale)
+    elif assiette + assiette_hs > seuil_max:
+        t1, t2, t1hs, t2hs = tranches_avec_hs(assiette, seuil_max - assiette, plafond_securite_sociale)
+    else:
+        t1, t2, t1hs, t2hs = tranches_avec_hs(assiette, assiette_hs, plafond_securite_sociale)
+    return t1, t2, t1hs, t2hs
 
-def calcul_cotis_vieillesse(assiette):
-    A, B = calcul_tranches_vieillesse(assiette)
-    AB   = A+B
-    return A  * taux_vieillesse_salarial_plafonnee,  \
-           A  * taux_vieillesse_patronal_plafonnee,  \
-           AB * taux_vieillesse_salarial_deplafonnee,\
-           AB * taux_vieillesse_patronal_deplafonnee
+def calcul_cotis_vieillesse(assiette, assiette_hs):
+    A, B, Ahs, Bhs = calcul_tranches_vieillesse(assiette, assiette_hs)
+    AB   = A + B
+    ABhs = Ahs + Bhs
+    return A    * taux_vieillesse_salarial_plafonnee,  \
+           Ahs  * taux_vieillesse_salarial_plafonnee,  \
+           A    * taux_vieillesse_patronal_plafonnee,  \
+           Ahs  * taux_vieillesse_patronal_plafonnee,  \
+           AB   * taux_vieillesse_salarial_deplafonnee,\
+           ABhs * taux_vieillesse_salarial_deplafonnee,\
+           AB   * taux_vieillesse_patronal_deplafonnee,\
+           ABhs * taux_vieillesse_patronal_deplafonnee
 
 # calcul retraite pubplique complementaire IRCANTEC
 
@@ -112,15 +127,19 @@ taux_ircantec_patronal_tranche_a = 0.042
 taux_ircantec_salarial_tranche_b = 0.0695
 taux_ircantec_patronal_tranche_b = 0.1255
 
-def calcul_tranches_ircantec(assiette):
-    return calcul_tranches_vieillesse(assiette)
+def calcul_tranches_ircantec(assiette, assiette_hs):
+    return calcul_tranches_vieillesse(assiette, assiette_hs)
 
-def calcul_cotis_ircantec(assiette):
-    A, B = calcul_tranches_ircantec(assiette)
-    return A  * taux_ircantec_salarial_tranche_a, \
-           A  * taux_ircantec_patronal_tranche_a, \
-           B  * taux_ircantec_salarial_tranche_b, \
-           B  * taux_ircantec_patronal_tranche_b 
+def calcul_cotis_ircantec(assiette, assiette_hs):
+    A, B, Ahs, Bhs = calcul_tranches_ircantec(assiette, assiette_hs)
+    return A   * taux_ircantec_salarial_tranche_a, \
+           Ahs * taux_ircantec_salarial_tranche_a, \
+           A   * taux_ircantec_patronal_tranche_a, \
+           Ahs * taux_ircantec_patronal_tranche_a, \
+           B   * taux_ircantec_salarial_tranche_b, \
+           Bhs * taux_ircantec_salarial_tranche_b, \
+           B   * taux_ircantec_patronal_tranche_b, \
+           Bhs * taux_ircantec_patronal_tranche_b 
 
 # calcul retraite privée complementaire AGIRC-ARRCO
 
@@ -129,15 +148,19 @@ taux_agirc_arrco_tranche_2 = 0.2159
 part_salariale_agirc_arrco = 0.4
 part_patronale_agirc_arrco = 1 - part_salariale_agirc_arrco
 
-def calcul_tranches_agirc_arrco(assiette):
-    return calcul_tranches_vieillesse(assiette)
+def calcul_tranches_agirc_arrco(assiette, assiette_hs):
+    return calcul_tranches_vieillesse(assiette, assiette_hs)
 
-def calcul_cotis_agirc_arrco(assiette):
-    A, B = calcul_tranches_agirc_arrco(assiette)
-    return A  * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_1, \
-           A  * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_1, \
-           B  * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_2, \
-           B  * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_2
+def calcul_cotis_agirc_arrco(assiette, assiette_hs):
+    A, B, Ahs, Bhs = calcul_tranches_agirc_arrco(assiette, assiette_hs)
+    return A   * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_1, \
+           Ahs * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_1, \
+           A   * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_1, \
+           Ahs * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_1, \
+           B   * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_2, \
+           Bhs * part_salariale_agirc_arrco * taux_agirc_arrco_tranche_2, \
+           B   * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_2, \
+           Bhs * part_patronale_agirc_arrco * taux_agirc_arrco_tranche_2
 
 # calcul allocations familiales
 taux_allocations_familiales_patronal        = .0525

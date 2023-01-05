@@ -222,7 +222,8 @@ class AllocationsFamiliales(Cotisation):
         self.taux_reduit = taux_reduit
         
     def cotise(self, assiettes, mode):
-        self.taux_reduit_effectif, self.cotis = regles.calcul_cotis_allocations_familiales(assiettes.securite_sociale, self.taux_reduit)
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.taux_reduit_effectif, self.cotis = regles.calcul_cotis_allocations_familiales(a, self.taux_reduit)
         
     def _cotisation_employeur(self):
         return self.cotis
@@ -242,7 +243,8 @@ class FNAL(Cotisation):
         self.nb_salaries = nb_salaries
         
     def cotise(self, assiettes, mode):
-        self.cotis = regles.calcul_cotis_fnal(assiettes.securite_sociale, self.nb_salaries)
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis = regles.calcul_cotis_fnal(a, self.nb_salaries)
         
     def _cotisation_employeur(self):
         return self.cotis
@@ -257,7 +259,8 @@ class PatronaleTauxSecuriteSociale(Cotisation):
         self.taux = taux
         
     def cotise(self, assiettes, mode):
-        self.cotis = assiettes.securite_sociale * self.taux * .01
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis = a * self.taux * .01
         
     def _cotisation_employeur(self):
         return self.cotis
@@ -279,7 +282,8 @@ class CNSA(Cotisation):
         super().__init__("Caisse Nationale de Solidarité pour l'Autonomie")
         
     def cotise(self, assiettes, mode):
-        self.cotis = assiettes.securite_sociale * regles.taux_cnsa_patronal
+        a = assiettes.securite_sociale + assiettes.securite_sociale_hs
+        self.cotis = a * regles.taux_cnsa_patronal
         
     def _cotisation_employeur(self):
         return self.cotis
