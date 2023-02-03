@@ -64,3 +64,19 @@ bulletin_paie -= pp.cotisations.AGIRC_ARRCO()
 ##############
 
 bulletin_paie != pp.evenements.RegularisationAccompte(500) # Regularisation d'un accompte de salaire sur la fiche de paie.
+
+
+################
+#              #
+# Calcul final #
+#              #
+################
+
+bulletin_paie(pp.regles.MODE_PUBLIC)      # Pour le fonctionnaires
+bulletin_paie(pp.regles.MODE_CONTRACTUEL) # Pour les salariés dont l'employeur (Etat par exemple)
+                                          # est exclu du taux réduit de cotisation maladie.
+bulletin_paie(pp.regles.MODE_PRIVE)       # Pour les salariés du privé.
+
+filename = 'bulletin.xlsx'
+bulletin_paie.to_excel(filename)
+print(f'fichier "{filename}" généré.')

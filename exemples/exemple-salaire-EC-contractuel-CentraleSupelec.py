@@ -21,7 +21,7 @@ bulletin_paie -= pp.cotisations.AccidentsTravail(taux=1.07)
 bulletin_paie -= pp.cotisations.Mobilite(taux=2.00)
 bulletin_paie -= pp.cotisations.CNSA()
 
-bulletin_paie(pp.regles.MODE_PRIVE) # On fait les calculs
+bulletin_paie(pp.regles.MODE_CONTRACTUEL) # On fait les calculs
 
 filename = 'EC-contractuel-CS.xlsx'
 bulletin_paie.to_excel(filename)

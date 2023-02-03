@@ -1,5 +1,6 @@
-MODE_PRIVE = 'privé'
-MODE_PUBLIC = 'public'
+MODE_PRIVE       = 'privé'
+MODE_PUBLIC      = 'public'
+MODE_CONTRACTUEL = 'contractuel'
 
 REGIME_GENERAL = 'général'
 REGIME_LOCAL   = 'local'
@@ -72,10 +73,15 @@ def calcul_cotis_maladie(assiette, mode, regime):
     cotis_salariale = None
     if mode == MODE_PUBLIC:
         cotis_non_majoree = assiette * taux_maladie_patronal_public
-    else:
+    elif mode == MODE_PRIVE:
         cotis_non_majoree = assiette * taux_maladie_patronal_prive_reduit
         if assiette > seuil_majoration_maladie:
             cotis_majoree = assiette * taux_maladie_patronal_prive_majoration
+    elif mode == MODE_CONTRACTUEL:
+        cotis_non_majoree = assiette * taux_maladie_patronal_prive_reduit
+        cotis_majoree = assiette * taux_maladie_patronal_prive_majoration
+    else:
+        raise ValueError(f'mode "{mode}" non pris en charge.') 
 
     if regime != REGIME_GENERAL:
         cotis_salariale = assiette * taux_maladie_salarial_local

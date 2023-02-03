@@ -85,7 +85,7 @@ class Bulletin:
         for elem in self.elements:
             if isinstance(elem, cotisations.ExonerableHeureSup):
                 cotisation_salariale_hs += elem._cotisation_salariale_via_heures_sup()
-        print('TO DO : gérer les seuils ici !!!')
+        print('TO DO : réduction heures sup : gérer les seuils ici !!!')
         self.total_salarial -= cotisation_salariale_hs
         self.elements.append(cotisations.ReductionHeureSup(cotisation_salariale_hs))
         
