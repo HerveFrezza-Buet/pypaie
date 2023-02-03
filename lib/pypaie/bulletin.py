@@ -60,15 +60,29 @@ class Bilan:
         return self.brut - self.salarial
 
     def __iadd__(self, elem):
+        brut, sal, pat = 0, 0, 0
         c = elem._brut()
         if c is not None:
-            self.brut += c
+            brut = c
         c = elem._cotisation_salariale()
         if c is not None:
-            self.salarial  += c
+            sal = c
         c = elem._cotisation_employeur()
         if c is not None:
-            self.employeur += c
+            pat = c
+        
+        self.brut      += brut
+        self.salarial  += sal
+        self.employeur += pat
+
+        if isinstance(elem, cotisations.Maladie):
+            self.maladie += sal + pat
+        elif isinstance(elem, cotisations.Retraite):
+            self.retraite += sal + pat
+        elif isinstance(elem, cotisations.Chomage):
+            self.chomage += sal + pat
+        elif isinstance(elem, cotisations.Cotisation):
+            self.divers += sal + pat
         return self
     
 class Bulletin:
@@ -196,14 +210,26 @@ def barplot(ax, bilans, title):
     legend_data.append(p[0])
     bottom += b
 
-    legend_names.append('cotis. salariale')
-    b = np.array([bilan.salarial for bilan in bilans])
+    legend_names.append('maladie')
+    b = np.array([bilan.maladie for bilan in bilans])
     p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
     legend_data.append(p[0])
     bottom += b
 
-    legend_names.append('cotis. employeur')
-    b = np.array([bilan.employeur for bilan in bilans])
+    legend_names.append('chômage')
+    b = np.array([bilan.chomage for bilan in bilans])
+    p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
+    legend_data.append(p[0])
+    bottom += b
+
+    legend_names.append('autres cotisations')
+    b = np.array([bilan.divers for bilan in bilans])
+    p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
+    legend_data.append(p[0])
+    bottom += b
+
+    legend_names.append('retraite')
+    b = np.array([bilan.retraite for bilan in bilans])
     p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
     legend_data.append(p[0])
     bottom += b
@@ -211,5 +237,7 @@ def barplot(ax, bilans, title):
     ax.set_title(title)
     ax.set_xticks(X, titles, rotation=60, ha='right')
     ax.set_ylabel('salaire')
+    legend_data.reverse()
+    legend_names.reverse()
     ax.legend(legend_data, legend_names, loc='upper right', bbox_to_anchor=(1, 1), ncol=1)
     
