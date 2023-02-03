@@ -2,7 +2,7 @@ import pypaie as pp
 
 indice = 700
 
-bulletin_paie  = pp.bulletin.Bulletin()
+bulletin_paie  = pp.bulletin.Bulletin(title = 'Psychologue Education Nationale')
 tb = pp.revenus.TraitementIndiciaireBrut(indice)
 bulletin_paie += tb
 bulletin_paie += pp.revenus.IndemniteResidence(1.00, tb)

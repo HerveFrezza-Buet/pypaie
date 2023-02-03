@@ -3,7 +3,7 @@
 
 import pypaie as pp
 
-bulletin_paie = pp.bulletin.Bulletin()
+bulletin_paie = pp.bulletin.Bulletin(title = 'Documentation')
 
 tb = pp.revenus.TraitementBrut(1000)
 
@@ -72,10 +72,21 @@ bulletin_paie != pp.evenements.RegularisationAccompte(500) # Regularisation d'un
 #              #
 ################
 
+bulletin_paie.clear()
 bulletin_paie(pp.regles.MODE_PUBLIC)      # Pour le fonctionnaires
+
+bulletin_paie.clear()
 bulletin_paie(pp.regles.MODE_CONTRACTUEL) # Pour les salariés dont l'employeur (Etat par exemple)
                                           # est exclu du taux réduit de cotisation maladie.
+
+bulletin_paie.clear()
 bulletin_paie(pp.regles.MODE_PRIVE)       # Pour les salariés du privé.
+
+##########
+#        #
+# Export #
+#        #
+##########
 
 filename = 'bulletin.xlsx'
 bulletin_paie.to_excel(filename)

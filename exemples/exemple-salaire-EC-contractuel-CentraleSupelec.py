@@ -2,7 +2,7 @@ import pypaie as pp
 
 indice = 1000
 
-bulletin_paie  = pp.bulletin.Bulletin()
+bulletin_paie  = pp.bulletin.Bulletin(title = 'EC contractuel CentraleSupélec')
 tb = pp.revenus.TraitementIndiciaireBrut(indice)
 bulletin_paie += tb
 bulletin_paie += pp.revenus.IndemniteResidence(1.00, tb)

@@ -1,7 +1,7 @@
 import pypaie as pp
 
 
-bulletin_paie  = pp.bulletin.Bulletin()
+bulletin_paie  = pp.bulletin.Bulletin(title = 'IRTF A/B CentraleSupélec')
 
 cas = 2
 

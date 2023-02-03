@@ -309,6 +309,9 @@ class ReductionHeureSup(Cotisation):
         super().__init__("Réduction cotisation heures sup.")
         self.montant = montant
         
+    def _cotisation_salariale(self):
+        return -self.montant
+    
     def lignes(self):
         return [{'label': self.label,
                  'salarial': -self.montant}]
