@@ -5,6 +5,7 @@ from . import evenements
 from . import ligne
 
 import xlsxwriter
+import numpy as np
 
 revenus_geres = [revenus.TraitementBrut,
                  revenus.HeuresSupBrut,
@@ -177,7 +178,38 @@ class Bulletin:
         worksheet.write(l, col_label,   'Net',                                    Label_fmt)
         worksheet.write(l, col_revenu,  self.bilan.net(),  Euro_fmt)
         
-                
-
-        
         workbook.close()
+
+
+def barplot(ax, bilans, title):
+    nb_categories = len(bilans)
+    titles = [bilan.title for bilan in bilans]
+    X = np.arange(nb_categories)
+    bottom = np.zeros(nb_categories)
+    
+    legend_data  = []
+    legend_names = []
+
+    legend_names.append('net')
+    b = np.array([bilan.net() for bilan in bilans])
+    p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
+    legend_data.append(p[0])
+    bottom += b
+
+    legend_names.append('cotis. salariale')
+    b = np.array([bilan.salarial for bilan in bilans])
+    p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
+    legend_data.append(p[0])
+    bottom += b
+
+    legend_names.append('cotis. employeur')
+    b = np.array([bilan.employeur for bilan in bilans])
+    p = ax.bar(X, b, bottom=bottom.tolist(), edgecolor='white', width=1)
+    legend_data.append(p[0])
+    bottom += b
+    
+    ax.set_title(title)
+    ax.set_xticks(X, titles, rotation=60, ha='right')
+    ax.set_ylabel('salaire')
+    ax.legend(legend_data, legend_names, loc='upper right', bbox_to_anchor=(1, 1), ncol=1)
+    

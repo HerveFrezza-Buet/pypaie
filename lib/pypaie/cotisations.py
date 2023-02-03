@@ -313,6 +313,9 @@ class ReductionHeureSup(Cotisation):
         return -self.montant
     
     def lignes(self):
-        return [{'label': self.label,
-                 'salarial': -self.montant}]
+        if self.montant > 1: # evite les presque 0 en cas d'arrondis.
+            return [{'label': self.label,
+                     'salarial': -self.montant}]
+        else:
+            return []
         
